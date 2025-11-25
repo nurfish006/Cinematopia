@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 
-export const dynamic = 'force-dynamic'
-
 type FilterType = "popular" | "top_rated" | "upcoming"
 
 interface Movie {
@@ -33,17 +31,13 @@ export default function ExplorePage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [loading, setLoading] = useState(true)
-  const imageBaseUrl = "https://image.tmdb.org/t/p/w500"
-  const paginationRange = 5
 
   useEffect(() => {
     const fetchMovies = async () => {
       setLoading(true)
       try {
-        console.log("[v0] Fetching movies:", { filter, currentPage })
         const response = await fetch(`/api/movies?type=${filter}&page=${currentPage}`)
         const data: ApiResponse = await response.json()
-        console.log("[v0] Movies fetched:", { results_count: data.results?.length, total_pages: data.total_pages })
         setMovies(data.results || [])
         setTotalPages(data.total_pages || 1)
       } catch (error) {
@@ -58,11 +52,12 @@ export default function ExplorePage() {
 
   const getPageNumbers = () => {
     const pages = []
-    let start = Math.max(1, currentPage - Math.floor(paginationRange / 2))
-    const end = Math.min(totalPages, start + paginationRange - 1)
+    const range = 2
+    let start = Math.max(1, currentPage - range)
+    const end = Math.min(totalPages, start + 4)
 
-    if (end - start < paginationRange - 1) {
-      start = Math.max(1, end - paginationRange + 1)
+    if (end - start < 4) {
+      start = Math.max(1, end - 4)
     }
 
     for (let i = start; i <= end; i++) {
@@ -71,164 +66,112 @@ export default function ExplorePage() {
     return pages
   }
 
-  const handlePrevious = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1)
-  }
-
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1)
-  }
-
   const handleFilterChange = (newFilter: FilterType) => {
     setFilter(newFilter)
     setCurrentPage(1)
   }
 
-  const handleSearch = (query: string) => {
-    console.log("[v0] Search:", query)
-  }
-
   return (
     <>
-      <Header onSearch={handleSearch} />
+      <Header onSearch={() => {}} />
+
       <main className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-12">
-          <h1 className="text-4xl font-bold text-accent mb-12">Explore Movies</h1>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <h1 className="text-3xl font-bold text-foreground">Explore Movies</h1>
 
-          <div className="flex gap-4 md:gap-8 mb-8 border-b border-accent/20 pb-4 flex-wrap">
-            <button
-              onClick={() => handleFilterChange("popular")}
-              className={`text-sm md:text-lg font-semibold transition-colors ${
-                filter === "popular"
-                  ? "text-accent border-b-2 border-accent pb-2"
-                  : "text-foreground/70 hover:text-accent"
-              }`}
-            >
-              Popular
-            </button>
-            <button
-              onClick={() => handleFilterChange("top_rated")}
-              className={`text-sm md:text-lg font-semibold transition-colors ${
-                filter === "top_rated"
-                  ? "text-accent border-b-2 border-accent pb-2"
-                  : "text-foreground/70 hover:text-accent"
-              }`}
-            >
-              Top Rated
-            </button>
-            <button
-              onClick={() => handleFilterChange("upcoming")}
-              className={`text-sm md:text-lg font-semibold transition-colors ${
-                filter === "upcoming"
-                  ? "text-accent border-b-2 border-accent pb-2"
-                  : "text-foreground/70 hover:text-accent"
-              }`}
-            >
-              Up Coming
-            </button>
-          </div>
-
-          <div className="flex items-center justify-center gap-2 mb-8 flex-wrap">
-            <Button onClick={handlePrevious} disabled={currentPage === 1} variant="outline" size="sm">
-              <ChevronLeft className="w-4 h-4 mr-1" />
-              Previous
-            </Button>
-
-            <div className="flex gap-1">
-              {getPageNumbers().map((page) => (
-                <Button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  variant={currentPage === page ? "default" : "outline"}
-                  size="sm"
-                  className={currentPage === page ? "bg-accent text-background hover:bg-accent/90" : ""}
+            <div className="flex items-center gap-4">
+              {(["popular", "top_rated", "upcoming"] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => handleFilterChange(f)}
+                  className={`text-sm md:text-base font-semibold transition-colors ${
+                    filter === f ? "text-accent border-b-2 border-accent pb-1" : "text-foreground/70 hover:text-accent"
+                  }`}
                 >
-                  {page}
-                </Button>
+                  {f === "top_rated" ? "Top Rated" : f === "upcoming" ? "Upcoming" : "Popular"}
+                </button>
               ))}
             </div>
+          </div>
 
-            <Button onClick={handleNext} disabled={currentPage === totalPages} variant="outline" size="sm">
-              Next
-              <ChevronRight className="w-4 h-4 ml-1" />
+          <div className="flex items-center justify-center gap-2 mb-8">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="rounded-xl"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+
+            {getPageNumbers().map((page) => (
+              <Button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                variant={currentPage === page ? "default" : "ghost"}
+                size="sm"
+                className={
+                  currentPage === page ? "bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg" : "rounded-lg"
+                }
+              >
+                {page}
+              </Button>
+            ))}
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="rounded-xl"
+            >
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
 
           {loading ? (
-            <div className="text-center py-12">
-              <p className="text-foreground/70">Loading movies...</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+              {[...Array(18)].map((_, i) => (
+                <div key={i} className="aspect-[2/3] bg-card rounded-xl animate-pulse" />
+              ))}
             </div>
           ) : movies.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-foreground/70">No movies found.</p>
-            </div>
+            <div className="text-center py-12 text-muted-foreground">No movies found.</div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-12">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
               {movies.map((movie) => (
-                <div
-                  key={movie.id}
-                  className="group cursor-pointer"
-                  onClick={() => router.push(`/movie/${movie.id}`)}
-                >
-                  <div className="relative rounded-lg overflow-hidden bg-card mb-3 aspect-[2/3]">
+                <button key={movie.id} onClick={() => router.push(`/movie/${movie.id}`)} className="group text-left">
+                  <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-card ring-1 ring-border group-hover:ring-accent transition-all duration-300 group-hover:scale-[1.02]">
                     <img
                       src={
-                        movie?.poster_path
-                          ? `${imageBaseUrl}${movie.poster_path}`
-                          : "/placeholder.svg?height=400&width=300"
+                        movie.poster_path
+                          ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                          : "/abstract-movie-poster.png"
                       }
-                      alt={movie?.title || "Movie"}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      alt={movie.title}
+                      className="w-full h-full object-cover"
                     />
-                  </div>
-                  <h3 className="font-semibold text-foreground/90 line-clamp-2 mb-1 text-sm">
-                    {movie?.title || "Untitled"}
-                  </h3>
-                  <div className="flex items-center gap-1 mb-1">
-                    <div className="flex gap-0.5">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-3 h-3 ${
-                            i < Math.round(movie?.vote_average / 2) ? "fill-accent text-accent" : "text-foreground/30"
-                          }`}
-                        />
-                      ))}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform">
+                      <div className="flex items-center gap-1 text-accent">
+                        <Star className="w-3 h-3 fill-accent" />
+                        <span className="text-sm font-medium">{movie.vote_average?.toFixed(1)}</span>
+                      </div>
                     </div>
                   </div>
-                  <p className="text-xs text-foreground/60">Total votes: {movie?.vote_count?.toLocaleString()}</p>
-                </div>
+                  <h3 className="mt-2 font-medium text-foreground line-clamp-1 group-hover:text-accent transition-colors">
+                    {movie.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">{movie.vote_count?.toLocaleString()} votes</p>
+                </button>
               ))}
             </div>
           )}
-
-          <div className="flex items-center justify-center gap-2 flex-wrap">
-            <Button onClick={handlePrevious} disabled={currentPage === 1} variant="outline" size="sm">
-              <ChevronLeft className="w-4 h-4 mr-1" />
-              Previous
-            </Button>
-
-            <div className="flex gap-1">
-              {getPageNumbers().map((page) => (
-                <Button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  variant={currentPage === page ? "default" : "outline"}
-                  size="sm"
-                  className={currentPage === page ? "bg-accent text-background hover:bg-accent/90" : ""}
-                >
-                  {page}
-                </Button>
-              ))}
-            </div>
-
-            <Button onClick={handleNext} disabled={currentPage === totalPages} variant="outline" size="sm">
-              Next
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
-          </div>
         </div>
       </main>
+
       <Footer />
     </>
   )

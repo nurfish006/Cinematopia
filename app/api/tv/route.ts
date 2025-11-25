@@ -20,6 +20,7 @@ export async function GET(request: Request) {
       }
 
       const endpoint = endpointMap[filterType as keyof typeof endpointMap] || "tv/popular"
+
       const response = await fetch(`${TMDB_BASE_URL}/${endpoint}?api_key=${TMDB_API_KEY}&page=${page}`)
 
       if (!response.ok) {
@@ -28,12 +29,6 @@ export async function GET(request: Request) {
       }
 
       const data = await response.json()
-      console.log("[v0] TMDB TV API Response:", {
-        filterType,
-        page,
-        total_pages: data.total_pages,
-        results_count: data.results?.length,
-      })
 
       return Response.json({
         results: data.results || [],

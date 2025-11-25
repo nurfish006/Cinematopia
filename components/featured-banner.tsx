@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import CountdownCircle from "@/components/countdown-circle"
+import { Play, Info, Star } from "lucide-react"
 
 interface FeaturedBannerProps {
   movies: any[]
@@ -14,7 +14,7 @@ export default function FeaturedBanner({ movies, imageBaseUrl }: FeaturedBannerP
   const router = useRouter()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [progress, setProgress] = useState(100)
-  const CAROUSEL_LIMIT = 6
+  const CAROUSEL_LIMIT = Math.min(6, movies.length)
 
   useEffect(() => {
     if (movies.length === 0) return
@@ -25,7 +25,7 @@ export default function FeaturedBanner({ movies, imageBaseUrl }: FeaturedBannerP
     }, 8000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [CAROUSEL_LIMIT, movies.length])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -36,71 +36,71 @@ export default function FeaturedBanner({ movies, imageBaseUrl }: FeaturedBannerP
   }, [currentIndex])
 
   const movie = movies[currentIndex] || movies[0]
-  const backdropUrl = movie?.backdrop_path ? `${imageBaseUrl}${movie.backdrop_path}` : "/movie-backdrop.png"
+  const backdropUrl = movie?.backdrop_path ? `${imageBaseUrl}${movie.backdrop_path}` : "/movie-theater-dark-background.jpg"
+
+  if (!movie) return null
 
   return (
-    <section className="relative w-full h-96 md:h-screen bg-card overflow-hidden">
-      {/* Background Image */}
+    <section className="relative h-[70vh] min-h-[500px] overflow-hidden">
       <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: `linear-gradient(135deg, rgba(0,0,0,0.7), rgba(20,20,30,0.5)), url('${backdropUrl}')`,
-        }}
-      />
-
-      {/* Numbered indicator at top */}
-      <div className="absolute top-6 left-6 bg-background/80 backdrop-blur-sm px-4 py-2 rounded-lg">
-        <p className="text-sm font-semibold text-accent">
-          {currentIndex + 1} / {CAROUSEL_LIMIT}
-        </p>
+        className="absolute inset-0 bg-cover bg-center transition-all duration-700"
+        style={{ backgroundImage: `url(${backdropUrl})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-transparent" />
       </div>
 
-      {/* Content */}
-      <div className="relative h-full container mx-auto px-4 flex items-center">
-        <div className="flex gap-8 w-full max-w-3xl">
-          {/* Poster */}
-          <div className="hidden md:block flex-shrink-0 w-48">
+      <div className="relative h-full container mx-auto px-4 flex items-end pb-16">
+        <div className="flex gap-8 items-end">
+          <div className="hidden md:block w-48 lg:w-56 shrink-0">
             <img
               src={movie?.poster_path ? `${imageBaseUrl}${movie.poster_path}` : "/abstract-movie-poster.png"}
-              alt={movie?.title || "Movie"}
-              className="w-full h-auto rounded-lg shadow-2xl object-cover"
+              alt={movie?.title}
+              className="w-full rounded-xl shadow-2xl ring-1 ring-white/10"
             />
           </div>
 
-          {/* Details */}
-          <div className="flex-1 flex flex-col justify-center">
-            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 text-balance">
-              {movie?.title || "Movie Title"}
-            </h1>
-            <p className="text-foreground/80 line-clamp-4 mb-6 max-w-xl leading-relaxed">
-              {movie?.overview || "No description available"}
-            </p>
-
-            <div className="flex items-center gap-6 mb-6">
-              <div>
-                <p className="text-foreground/60 text-sm">Vote</p>
-                <p className="text-xl font-bold text-accent">{movie?.vote_average?.toFixed(1) || "N/A"}/10</p>
-              </div>
-              <div>
-                <p className="text-foreground/60 text-sm">Total votes</p>
-                <p className="text-xl font-bold text-accent">{movie?.vote_count?.toLocaleString() || "0"}</p>
-              </div>
+          <div className="flex-1 max-w-2xl space-y-4">
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-accent bg-accent/20 px-3 py-1 rounded-full">Featured</span>
+              <span className="text-sm text-muted-foreground">
+                {currentIndex + 1} / {CAROUSEL_LIMIT}
+              </span>
             </div>
 
-            <div className="flex gap-4">
-              <Button 
-                className="bg-accent text-background hover:bg-accent/90 px-8"
+            <h1 className="text-4xl lg:text-5xl font-bold text-foreground text-balance">
+              {movie?.title || "Movie Title"}
+            </h1>
+
+            <p className="text-foreground/80 line-clamp-3 text-lg">{movie?.overview || "No description available"}</p>
+
+            <div className="flex items-center gap-6 text-sm">
+              <div className="flex items-center gap-2">
+                <Star className="w-5 h-5 text-accent fill-accent" />
+                <span className="font-semibold text-foreground">{movie?.vote_average?.toFixed(1) || "N/A"}</span>
+                <span className="text-muted-foreground">/10</span>
+              </div>
+              <span className="text-muted-foreground">{movie?.vote_count?.toLocaleString() || "0"} votes</span>
+            </div>
+
+            <div className="flex items-center gap-4 pt-2">
+              <Button
                 onClick={() => router.push(`/movie/${movie?.id}`)}
+                className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl px-6"
               >
-                View Details
+                <Play className="w-4 h-4 mr-2 fill-current" />
+                Watch Trailer
+              </Button>
+              <Button variant="outline" onClick={() => router.push(`/movie/${movie?.id}`)} className="rounded-xl px-6">
+                <Info className="w-4 h-4 mr-2" />
+                More Info
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
         {[...Array(CAROUSEL_LIMIT)].map((_, index) => (
           <button
             key={index}
@@ -108,18 +108,12 @@ export default function FeaturedBanner({ movies, imageBaseUrl }: FeaturedBannerP
               setCurrentIndex(index)
               setProgress(100)
             }}
-            className={`w-6 h-6 rounded-full transition text-xs font-semibold flex items-center justify-center ${
-              index === currentIndex
-                ? "bg-accent text-background"
-                : "bg-foreground/30 text-foreground/60 hover:bg-foreground/50"
+            className={`h-2 rounded-full transition-all ${
+              index === currentIndex ? "w-8 bg-accent" : "w-2 bg-foreground/30 hover:bg-foreground/50"
             }`}
-          >
-            {index + 1}
-          </button>
+          />
         ))}
       </div>
-
-      <CountdownCircle progress={progress} />
     </section>
   )
 }

@@ -1,26 +1,28 @@
 "use client"
 
 import type React from "react"
-import { Suspense, useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { Search, Star, Moon, Sun, X, Menu } from "lucide-react"
+import { Search, Moon, Sun, X, Menu, Film } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 interface Movie {
   id: number
   title: string
   overview: string
   release_date: string
+  poster_path: string
 }
 
 interface HeaderProps {
   onSearch: (query: string) => void
 }
 
-function HeaderContent({ onSearch }: HeaderProps) {
+export default function Header({ onSearch }: HeaderProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const [searchValue, setSearchValue] = useState<string>(() => {
+  const [searchValue, setSearchValue] = useState(() => {
     if (typeof window !== "undefined") {
       const query = new URLSearchParams(window.location.search).get("q")
       return query || ""
@@ -47,7 +49,6 @@ function HeaderContent({ onSearch }: HeaderProps) {
     }
   }, [])
 
-  // Sync search value from URL whenever it changes
   useEffect(() => {
     const query = new URLSearchParams(window.location.search).get("q")
     if (query) {
@@ -58,7 +59,7 @@ function HeaderContent({ onSearch }: HeaderProps) {
   useEffect(() => {
     if (searchValue.trim().length > 0) {
       if (searchRef.current) clearTimeout(searchRef.current)
-      
+
       searchRef.current = setTimeout(async () => {
         try {
           setIsSearching(true)
@@ -130,179 +131,140 @@ function HeaderContent({ onSearch }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-accent/20">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition" onClick={() => router.push("/")}>
-          <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
-            <Star className="w-6 h-6 text-background" />
+    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center">
+            <Film className="w-6 h-6 text-accent-foreground" />
           </div>
-          <h1 className="text-xl md:text-2xl font-bold text-accent">Cinematopia</h1>
-        </div>
+          <span className="text-xl font-bold text-foreground hidden sm:block">Cinematopia</span>
+        </Link>
 
-        <nav className="hidden md:flex items-center gap-8">
-          <a href="/" className={`transition ${isActive("/") ? "text-accent font-semibold" : "text-foreground/80 hover:text-accent"}`}>
+        <nav className="hidden md:flex items-center gap-6">
+          <Link
+            href="/"
+            className={`font-medium transition-colors ${
+              isActive("/") ? "text-accent" : "text-foreground/70 hover:text-accent"
+            }`}
+          >
             Home
-          </a>
-          <a href="/explore" className={`transition ${isActive("/explore") ? "text-accent font-semibold" : "text-foreground/80 hover:text-accent"}`}>
+          </Link>
+          <Link
+            href="/explore"
+            className={`font-medium transition-colors ${
+              isActive("/explore") ? "text-accent" : "text-foreground/70 hover:text-accent"
+            }`}
+          >
             Explore
-          </a>
-          <a href="/tv-shows" className={`transition ${isActive("/tv-shows") ? "text-accent font-semibold" : "text-foreground/80 hover:text-accent"}`}>
+          </Link>
+          <Link
+            href="/tv-shows"
+            className={`font-medium transition-colors ${
+              isActive("/tv-shows") ? "text-accent" : "text-foreground/70 hover:text-accent"
+            }`}
+          >
             TV Shows
-          </a>
+          </Link>
         </nav>
 
-        {/* Mobile Menu Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 hover:bg-foreground/10 rounded transition"
+          className="md:hidden p-2 hover:bg-foreground/10 rounded-lg transition"
           aria-label="Toggle menu"
         >
           {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        <form onSubmit={handleSearch} className="flex items-center gap-2 order-3 md:order-none w-full md:w-auto md:flex-none sm:w-64 sm:order-none">
-          <div className="relative w-full sm:w-64" ref={dropdownRef}>
+        <div className="flex-1 max-w-md relative" ref={dropdownRef}>
+          <form onSubmit={handleSearch} className="relative">
             <input
               type="text"
               placeholder="Search movies..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="w-full px-4 py-2 bg-card border border-accent/30 rounded-lg text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-accent transition"
+              className="w-full px-4 py-2.5 pl-10 bg-card border border-border rounded-xl text-foreground placeholder:text-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition"
             />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
             {searchValue && (
               <button
                 type="button"
                 onClick={handleClear}
-                className="absolute right-10 top-2.5 text-red-500 hover:text-red-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground"
               >
                 <X className="w-4 h-4" />
               </button>
             )}
-            {!searchValue && (
-              <Search className="absolute right-3 top-2.5 w-4 h-4 text-foreground/50 pointer-events-none" />
-            )}
+          </form>
 
-            {/* Search Dropdown */}
-            {showResults && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-accent/30 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50">
-                {searchResults.map((movie: any) => (
-                  <div
-                    key={movie.id}
-                    className="flex gap-3 px-4 py-3 border-b border-foreground/10 last:border-b-0 hover:bg-background/80 transition"
-                  >
-                    {/* Poster Image */}
-                    {movie.poster_path && (
-                      <img
-                        src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
-                        alt={movie.title}
-                        className="w-12 h-16 rounded object-cover flex-shrink-0"
-                      />
-                    )}
-                    
-                    {/* Movie Info */}
-                    <button
-                      onClick={() => handleMovieClick(movie.id)}
-                      className="flex-1 text-left"
-                    >
-                      <h3 className="text-sm font-semibold text-foreground mb-1">{movie.title}</h3>
-                      <p className="text-xs text-foreground/70 line-clamp-2 mb-2">
-                        {movie.overview || "No description available"}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs text-foreground/60">
-                          Release Date: {movie.release_date || "N/A"}
-                        </p>
-                        <a
-                          href={`/movie/${movie.id}`}
-                          onClick={(e) => {
-                            e.preventDefault()
-                            handleMovieClick(movie.id)
-                          }}
-                          className="text-xs text-accent hover:underline ml-2"
-                        >
-                          more
-                        </a>
-                      </div>
-                    </button>
+          {showResults && searchResults.length > 0 && (
+            <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-xl shadow-2xl overflow-hidden z-50">
+              {searchResults.map((movie) => (
+                <button
+                  key={movie.id}
+                  onClick={() => handleMovieClick(movie.id)}
+                  className="w-full flex items-center gap-3 p-3 hover:bg-accent/10 transition text-left"
+                >
+                  {movie.poster_path && (
+                    <img
+                      src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
+                      alt={movie.title}
+                      className="w-10 h-14 object-cover rounded"
+                    />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-foreground truncate">{movie.title}</p>
+                    <p className="text-sm text-muted-foreground">{movie.release_date?.split("-")[0] || "N/A"}</p>
                   </div>
-                ))}
-              </div>
-            )}
+                </button>
+              ))}
+            </div>
+          )}
 
-            {showResults && isSearching && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-accent/30 rounded-lg shadow-lg p-4 z-50 text-center">
-                <p className="text-xs text-foreground/60">Searching...</p>
-              </div>
-            )}
+          {showResults && isSearching && (
+            <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-xl p-4 text-center">
+              <span className="text-muted-foreground">Searching...</span>
+            </div>
+          )}
+        </div>
 
-            {showResults && !isSearching && searchResults.length === 0 && searchValue.trim() && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-accent/30 rounded-lg shadow-lg p-4 z-50 text-center">
-                <p className="text-xs text-foreground/60">No results found</p>
-              </div>
-            )}
-          </div>
-          <Button type="submit" size="sm" className="bg-accent text-background hover:bg-accent/90">
-            <Search className="w-4 h-4" />
-          </Button>
+        <div className="flex items-center gap-2">
           {mounted && (
-            <Button
-              onClick={toggleTheme}
-              size="sm"
-              variant="outline"
-              className="ml-2 bg-transparent"
-              aria-label="Toggle theme"
-            >
-              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-xl">
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </Button>
           )}
-        </form>
+        </div>
       </div>
 
-      {/* Mobile Navigation Menu */}
       {mobileMenuOpen && (
-        <nav className="md:hidden bg-background border-t border-accent/20 px-4 py-4 flex flex-col gap-4">
-          <a
+        <nav className="md:hidden border-t border-border bg-background p-4 flex flex-col gap-2">
+          <Link
             href="/"
-            className={`block py-2 transition ${isActive("/") ? "text-accent font-semibold" : "text-foreground/80 hover:text-accent"}`}
             onClick={() => setMobileMenuOpen(false)}
+            className={`px-4 py-2 rounded-lg font-medium ${isActive("/") ? "bg-accent text-accent-foreground" : ""}`}
           >
             Home
-          </a>
-          <a
+          </Link>
+          <Link
             href="/explore"
-            className={`block py-2 transition ${isActive("/explore") ? "text-accent font-semibold" : "text-foreground/80 hover:text-accent"}`}
             onClick={() => setMobileMenuOpen(false)}
+            className={`px-4 py-2 rounded-lg font-medium ${
+              isActive("/explore") ? "bg-accent text-accent-foreground" : ""
+            }`}
           >
             Explore
-          </a>
-          <a
+          </Link>
+          <Link
             href="/tv-shows"
-            className={`block py-2 transition ${isActive("/tv-shows") ? "text-accent font-semibold" : "text-foreground/80 hover:text-accent"}`}
             onClick={() => setMobileMenuOpen(false)}
+            className={`px-4 py-2 rounded-lg font-medium ${
+              isActive("/tv-shows") ? "bg-accent text-accent-foreground" : ""
+            }`}
           >
             TV Shows
-          </a>
+          </Link>
         </nav>
       )}
     </header>
-  )
-}
-
-export default function Header({ onSearch }: HeaderProps) {
-  return (
-    <Suspense fallback={
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-accent/20">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
-              <Star className="w-6 h-6 text-background" />
-            </div>
-            <h1 className="text-xl md:text-2xl font-bold text-accent">Cinematopia</h1>
-          </div>
-        </div>
-      </header>
-    }>
-      <HeaderContent onSearch={onSearch} />
-    </Suspense>
   )
 }

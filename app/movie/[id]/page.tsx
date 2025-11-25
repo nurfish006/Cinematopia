@@ -5,9 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
-import { Star, ArrowLeft, Play } from "lucide-react"
-
-export const dynamic = 'force-dynamic'
+import { Star, ArrowLeft, Play, Clock, Calendar } from "lucide-react"
 
 interface MovieDetails {
   id: number
@@ -54,7 +52,6 @@ export default function MovieDetailsPage() {
     const fetchDetails = async () => {
       try {
         setLoading(true)
-        console.log("[v0] Fetching movie details for:", movieId)
         const response = await fetch(`/api/movie/${movieId}`, {
           cache: "no-store",
         })
@@ -64,28 +61,16 @@ export default function MovieDetailsPage() {
         }
 
         const data = await response.json()
-        console.log("[v0] Movie data received:", {
-          title: data.movie?.title,
-          videosCount: data.videos?.length,
-          castCount: data.cast?.length,
-        })
 
         setMovie(data.movie)
         setVideos(data.videos || [])
         setCast(data.cast || [])
 
-        // Set first trailer or video as default
-        const trailer = data.videos?.find(
-          (v: Video) => v.type === "Trailer" && v.site === "YouTube"
-        )
+        const trailer = data.videos?.find((v: Video) => v.type === "Trailer" && v.site === "YouTube")
         if (trailer) {
-          console.log("[v0] Trailer found:", trailer.name)
           setSelectedVideo(trailer)
         } else if (data.videos && data.videos.length > 0) {
-          console.log("[v0] No trailer, using first video:", data.videos[0].name)
           setSelectedVideo(data.videos[0])
-        } else {
-          console.log("[v0] No videos found for this movie")
         }
       } catch (error) {
         console.error("[v0] Error fetching movie details:", error)
@@ -104,7 +89,7 @@ export default function MovieDetailsPage() {
       <>
         <Header onSearch={() => {}} />
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <p className="text-foreground/70">Loading movie details...</p>
+          <div className="animate-pulse text-muted-foreground">Loading movie details...</div>
         </div>
         <Footer />
       </>
@@ -116,7 +101,12 @@ export default function MovieDetailsPage() {
       <>
         <Header onSearch={() => {}} />
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <p className="text-foreground/70">Movie not found</p>
+          <div className="text-center space-y-4">
+            <p className="text-muted-foreground">Movie not found</p>
+            <Button onClick={() => router.back()} variant="outline">
+              Go Back
+            </Button>
+          </div>
         </div>
         <Footer />
       </>
@@ -126,178 +116,159 @@ export default function MovieDetailsPage() {
   return (
     <>
       <Header onSearch={() => {}} />
-      <main className="min-h-screen bg-background">
-        {/* Back Button */}
-        <div className="pt-4 px-4">
-          <Button onClick={() => router.back()} variant="outline" className="mb-4">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-        </div>
 
-        {/* Backdrop */}
-        <div className="relative w-full h-96 md:h-screen bg-card overflow-hidden mb-8">
+      <main className="min-h-screen bg-background">
+        <div className="relative h-[50vh] min-h-[400px]">
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `linear-gradient(135deg, rgba(0,0,0,0.7), rgba(20,20,30,0.5)), url('${
-                movie.backdrop_path ? `${IMAGE_BASE_URL}${movie.backdrop_path}` : ""
-              }')`,
+              backgroundImage: `url(${movie.backdrop_path ? `${IMAGE_BASE_URL}${movie.backdrop_path}` : "/movie-backdrop.png"})`,
             }}
-          />
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/40" />
+          </div>
 
-          {/* Movie Info Overlay */}
-          <div className="relative h-full container mx-auto px-4 flex items-end pb-12">
-            <div className="flex gap-8 w-full max-w-4xl">
-              <div className="hidden md:block flex-shrink-0 w-48">
-                <img
-                  src={
-                    movie.poster_path
-                      ? `${IMAGE_BASE_URL}${movie.poster_path}`
-                      : "/placeholder.svg"
-                  }
-                  alt={movie.title}
-                  className="w-full h-auto rounded-lg shadow-2xl object-cover"
-                />
-              </div>
-
-              <div className="flex-1 text-white">
-                <h1 className="text-4xl md:text-5xl font-bold mb-4">{movie.title}</h1>
-                <p className="text-foreground/80 line-clamp-3 mb-4 leading-relaxed">
-                  {movie.overview}
-                </p>
-
-                <div className="flex items-center gap-8 mb-6">
-                  <div>
-                    <p className="text-foreground/60 text-sm">Rating</p>
-                    <div className="flex items-center gap-2">
-                      <Star className="w-5 h-5 fill-accent text-accent" />
-                      <p className="text-xl font-bold text-accent">
-                        {movie.vote_average?.toFixed(1)}/10
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-foreground/60 text-sm">Votes</p>
-                    <p className="text-xl font-bold text-accent">
-                      {movie.vote_count?.toLocaleString()}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-foreground/60 text-sm">Released</p>
-                    <p className="text-xl font-bold text-accent">
-                      {movie.release_date
-                        ? new Date(movie.release_date).getFullYear()
-                        : "N/A"}
-                    </p>
-                  </div>
-                  {movie.runtime && (
-                    <div>
-                      <p className="text-foreground/60 text-sm">Duration</p>
-                      <p className="text-xl font-bold text-accent">
-                        {Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-              </div>
-            </div>
+          <div className="absolute top-4 left-4">
+            <Button
+              onClick={() => router.back()}
+              variant="outline"
+              className="rounded-xl bg-background/50 backdrop-blur-sm"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
           </div>
         </div>
 
-        {/* Videos Section */}
-        <div className="container mx-auto px-4 max-w-7xl mb-12">
+        <div className="container mx-auto px-4 -mt-32 relative z-10">
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="w-48 md:w-64 shrink-0 mx-auto md:mx-0">
+              <img
+                src={movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : "/abstract-movie-poster.png"}
+                alt={movie.title}
+                className="w-full rounded-xl shadow-2xl ring-1 ring-white/10"
+              />
+            </div>
+
+            <div className="flex-1 space-y-6">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-foreground text-balance">{movie.title}</h1>
+
+                {movie.genres && movie.genres.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {movie.genres.map((genre) => (
+                      <span key={genre.id} className="text-sm px-3 py-1 bg-accent/20 text-accent rounded-full">
+                        {genre.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-6 text-sm">
+                <div className="flex items-center gap-2">
+                  <Star className="w-5 h-5 text-accent fill-accent" />
+                  <span className="font-semibold text-foreground text-lg">{movie.vote_average?.toFixed(1)}</span>
+                  <span className="text-muted-foreground">/10</span>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <span>{movie.vote_count?.toLocaleString()} votes</span>
+                </div>
+                {movie.release_date && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Calendar className="w-4 h-4" />
+                    <span>{new Date(movie.release_date).getFullYear()}</span>
+                  </div>
+                )}
+                {movie.runtime && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Clock className="w-4 h-4" />
+                    <span>
+                      {Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <p className="text-foreground/80 text-lg leading-relaxed">{movie.overview}</p>
+            </div>
+          </div>
+
           {selectedVideo && (
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-foreground mb-6">
-                {selectedVideo.name}
-              </h2>
-              <div className="relative w-full bg-black rounded-lg overflow-hidden" style={{ paddingBottom: "56.25%" }}>
+            <section className="mt-12 space-y-4">
+              <h2 className="text-2xl font-bold text-foreground">{selectedVideo.name}</h2>
+              <div className="aspect-video rounded-xl overflow-hidden bg-card">
                 <iframe
-                  className="absolute inset-0 w-full h-full"
-                  src={`https://www.youtube.com/embed/${selectedVideo.key}`}
+                  src={`https://www.youtube.com/embed/${selectedVideo.key}?autoplay=0&rel=0`}
                   title={selectedVideo.name}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
+                  className="w-full h-full"
                 />
               </div>
-            </div>
+            </section>
           )}
 
-          {/* Videos List */}
           {videos.length > 1 && (
-            <div className="mb-12">
-              <h3 className="text-2xl font-bold text-foreground mb-6">More Videos ({videos.length})</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <section className="mt-8 space-y-4">
+              <h3 className="text-xl font-semibold text-foreground">More Videos ({videos.length})</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {videos.map((video) => (
                   <button
                     key={video.id}
                     onClick={() => setSelectedVideo(video)}
-                    className={`group relative overflow-hidden rounded-lg transition-all duration-300 cursor-pointer ${
+                    className={`group relative aspect-video rounded-lg overflow-hidden transition-all ${
                       selectedVideo?.id === video.id
-                        ? "ring-2 ring-accent shadow-lg shadow-accent/50"
-                        : "hover:ring-2 hover:ring-accent/50"
+                        ? "ring-2 ring-accent shadow-lg shadow-accent/30"
+                        : "ring-1 ring-border hover:ring-accent/50"
                     }`}
                   >
-                    {/* Thumbnail Background */}
-                    <div className="relative w-full bg-gradient-to-br from-card to-background/50 aspect-video flex items-center justify-center overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-accent/5" />
-                      <Play className="w-12 h-12 text-accent opacity-70 group-hover:opacity-100 transition-opacity" />
-                      
-                      {/* Selected Indicator */}
-                      {selectedVideo?.id === video.id && (
-                        <div className="absolute top-2 right-2 bg-accent text-background rounded-full p-1">
-                          <Play className="w-3 h-3" />
-                        </div>
-                      )}
+                    <img
+                      src={`https://img.youtube.com/vi/${video.key}/mqdefault.jpg`}
+                      alt={video.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Play className="w-8 h-8 text-white fill-white" />
                     </div>
-
-                    {/* Video Info */}
-                    <div className="p-4 bg-card/80 backdrop-blur-sm border border-foreground/10 group-hover:border-accent/50 transition-colors">
-                      <p className="font-semibold text-foreground text-sm line-clamp-2 mb-2 text-left">
-                        {video.name}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-accent font-medium">{video.type}</span>
-                        {video.site && (
-                          <span className="text-xs text-foreground/50">{video.site}</span>
-                        )}
-                      </div>
+                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
+                      <p className="text-xs text-white line-clamp-1">{video.name}</p>
                     </div>
                   </button>
                 ))}
               </div>
-            </div>
+            </section>
           )}
 
-          {/* Cast Section */}
           {cast.length > 0 && (
-            <div className="mb-12">
-              <h3 className="text-2xl font-bold text-foreground mb-6">Cast</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <section className="mt-12 space-y-4 pb-12">
+              <h2 className="text-2xl font-bold text-foreground">Cast</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {cast.map((actor) => (
-                  <div key={actor.id} className="text-center">
-                    {actor.profile_path && (
+                  <div key={actor.id} className="bg-card rounded-xl overflow-hidden ring-1 ring-border">
+                    {actor.profile_path ? (
                       <img
-                        src={`${IMAGE_BASE_URL}${actor.profile_path}`}
+                        src={`https://image.tmdb.org/t/p/w300${actor.profile_path}`}
                         alt={actor.name}
-                        className="w-full rounded-lg mb-3 aspect-[2/3] object-cover"
+                        className="w-full aspect-[3/4] object-cover"
                       />
+                    ) : (
+                      <div className="w-full aspect-[3/4] bg-muted flex items-center justify-center text-muted-foreground">
+                        No Image
+                      </div>
                     )}
-                    <p className="font-semibold text-foreground text-sm line-clamp-1">
-                      {actor.name}
-                    </p>
-                    <p className="text-xs text-foreground/60 line-clamp-1">
-                      {actor.character}
-                    </p>
+                    <div className="p-3">
+                      <p className="font-medium text-foreground line-clamp-1">{actor.name}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-1">{actor.character}</p>
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
           )}
         </div>
       </main>
+
       <Footer />
     </>
   )

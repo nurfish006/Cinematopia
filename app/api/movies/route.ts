@@ -4,7 +4,10 @@ export async function GET(request: Request) {
     const TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
     if (!TMDB_API_KEY) {
-      return Response.json({ error: "TMDB_API_KEY not configured" }, { status: 500 })
+      return Response.json(
+        { error: "TMDB_API_KEY not configured. Please add your TMDB API key in the Vars section." },
+        { status: 500 },
+      )
     }
 
     const { searchParams } = new URL(request.url)
@@ -20,6 +23,7 @@ export async function GET(request: Request) {
       }
 
       const endpoint = endpointMap[filterType as keyof typeof endpointMap] || "movie/popular"
+
       const response = await fetch(`${TMDB_BASE_URL}/${endpoint}?api_key=${TMDB_API_KEY}&page=${page}`)
 
       if (!response.ok) {
@@ -28,12 +32,6 @@ export async function GET(request: Request) {
       }
 
       const data = await response.json()
-      console.log("[v0] TMDB API Response:", {
-        filterType,
-        page,
-        total_pages: data.total_pages,
-        results_count: data.results?.length,
-      })
 
       return Response.json({
         results: data.results || [],
@@ -53,15 +51,7 @@ export async function GET(request: Request) {
       return Response.json({ error: "Failed to fetch from TMDB" }, { status: 500 })
     }
 
-    const [nowPlayingData, topRatedData] = await Promise.all([
-      nowPlayingRes.json(),
-      topRatedRes.json(),
-    ])
-
-    console.log("[v0] TMDB API Response - Multiple:", {
-      nowPlaying_count: nowPlayingData.results?.length,
-      topRated_count: topRatedData.results?.length,
-    })
+    const [nowPlayingData, topRatedData] = await Promise.all([nowPlayingRes.json(), topRatedRes.json()])
 
     return Response.json({
       nowPlaying: nowPlayingData.results || [],
