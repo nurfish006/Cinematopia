@@ -1,81 +1,88 @@
-import { Facebook, Twitter, Instagram, Film } from "lucide-react"
+import { Clapperboard } from "lucide-react"
 import Link from "next/link"
 
 export default function Footer() {
   return (
-    <footer className="bg-card border-t border-border mt-16">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center">
-                <Film className="w-6 h-6 text-accent-foreground" />
+    <footer className="bg-secondary/30 border-t border-border/50 mt-20">
+      <div className="container mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+          {/* Brand */}
+          <div className="lg:col-span-1">
+            <Link href="/" className="flex items-center gap-3 mb-5">
+              <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center">
+                <Clapperboard className="w-5 h-5 text-accent-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground">Cinematopia</span>
+              <span className="text-lg font-semibold tracking-tight text-foreground">Cinematopia</span>
             </Link>
-            <p className="text-muted-foreground max-w-sm">
-              Discover the best movies and TV shows with stunning trailers, cast information, and comprehensive
-              entertainment details.
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+              Your destination for discovering the best in cinema and television entertainment.
             </p>
           </div>
 
+          {/* Navigation */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">About</h4>
-            <ul className="space-y-2 text-muted-foreground">
-              <li>
-                <Link href="#" className="hover:text-accent transition">
-                  About Cinematopia
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-accent transition">
-                  Our Story
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-accent transition">
-                  Blog
-                </Link>
-              </li>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Navigate</h4>
+            <ul className="space-y-3">
+              {["Home", "Explore", "TV Shows", "Mood Match"].map((item) => (
+                <li key={item}>
+                  <Link
+                    href={
+                      item === "Home"
+                        ? "/"
+                        : item === "Mood Match"
+                          ? "/mood"
+                          : `/${item.toLowerCase().replace(" ", "-")}`
+                    }
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {item}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
+          {/* Contact */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Contact</h4>
-            <ul className="space-y-2 text-muted-foreground">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Contact</h4>
+            <ul className="space-y-3">
               <li>
-                <a href="mailto:hello@cinematopia.com" className="hover:text-accent transition">
+                <a
+                  href="mailto:hello@cinematopia.com"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
                   hello@cinematopia.com
                 </a>
               </li>
               <li>
-                <Link href="#" className="hover:text-accent transition">
+                <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Support
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-accent transition">
+                <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Feedback
                 </Link>
               </li>
             </ul>
           </div>
 
+          {/* Legal */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Legal</h4>
-            <ul className="space-y-2 text-muted-foreground">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Legal</h4>
+            <ul className="space-y-3">
               <li>
-                <Link href="#" className="hover:text-accent transition">
+                <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-accent transition">
+                <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-accent transition">
+                <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Cookie Policy
                 </Link>
               </li>
@@ -83,19 +90,11 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">© 2025 Cinematopia. All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <a href="#" className="text-muted-foreground hover:text-accent transition">
-              <Facebook className="w-5 h-5" />
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-accent transition">
-              <Twitter className="w-5 h-5" />
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-accent transition">
-              <Instagram className="w-5 h-5" />
-            </a>
-          </div>
+        <div className="mt-16 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-muted-foreground">
+            © {new Date().getFullYear()} Cinematopia. All rights reserved.
+          </p>
+          <p className="text-xs text-muted-foreground">Powered by TMDB</p>
         </div>
       </div>
     </footer>

@@ -83,17 +83,21 @@ export default function TVShowsPage() {
       <Header onSearch={() => {}} />
 
       <main className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <h1 className="text-3xl font-bold text-foreground">Explore TV Shows</h1>
+        <div className="container mx-auto px-6 py-10">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+            <h1 className="text-2xl font-semibold text-foreground tracking-tight">TV Shows</h1>
 
-            <div className="flex flex-wrap items-center gap-4">
+            {/* Filter tabs */}
+            <div className="flex flex-wrap items-center gap-1 p-1 bg-secondary/50 rounded-lg">
               {(["popular", "top_rated", "on_the_air", "airing_today"] as const).map((f) => (
                 <button
                   key={f}
                   onClick={() => handleFilterChange(f)}
-                  className={`text-sm md:text-base font-semibold transition-colors ${
-                    filter === f ? "text-accent border-b-2 border-accent pb-1" : "text-foreground/70 hover:text-accent"
+                  className={`px-3 py-2 text-sm font-medium rounded-md transition-all ${
+                    filter === f
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {filterLabels[f]}
@@ -102,13 +106,14 @@ export default function TVShowsPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-2 mb-8">
+          {/* Pagination */}
+          <div className="flex items-center justify-center gap-1.5 mb-8">
             <Button
-              variant="outline"
+              variant="ghost"
               size="icon"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="rounded-xl"
+              className="rounded-lg w-8 h-8"
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
@@ -117,40 +122,41 @@ export default function TVShowsPage() {
               <Button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                variant={currentPage === page ? "default" : "ghost"}
+                variant="ghost"
                 size="sm"
-                className={
-                  currentPage === page ? "bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg" : "rounded-lg"
-                }
+                className={`rounded-lg w-8 h-8 text-xs ${
+                  currentPage === page ? "bg-accent text-accent-foreground hover:bg-accent/90" : "hover:bg-secondary"
+                }`}
               >
                 {page}
               </Button>
             ))}
 
             <Button
-              variant="outline"
+              variant="ghost"
               size="icon"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="rounded-xl"
+              className="rounded-lg w-8 h-8"
             >
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
 
+          {/* Grid */}
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
               {[...Array(18)].map((_, i) => (
-                <div key={i} className="aspect-[2/3] bg-card rounded-xl animate-pulse" />
+                <div key={i} className="aspect-[2/3] bg-secondary rounded-xl animate-pulse" />
               ))}
             </div>
           ) : shows.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">No TV shows found.</div>
+            <div className="text-center py-20 text-muted-foreground">No TV shows found.</div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
               {shows.map((show) => (
                 <button key={show.id} onClick={() => router.push(`/tv/${show.id}`)} className="group text-left">
-                  <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-card ring-1 ring-border group-hover:ring-accent transition-all duration-300 group-hover:scale-[1.02]">
+                  <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-secondary">
                     <img
                       src={
                         show.poster_path
@@ -158,20 +164,20 @@ export default function TVShowsPage() {
                           : "/mystery-town-poster.png"
                       }
                       alt={show.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform">
-                      <div className="flex items-center gap-1 text-accent">
-                        <Star className="w-3 h-3 fill-accent" />
-                        <span className="text-sm font-medium">{show.vote_average?.toFixed(1)}</span>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                      <div className="flex items-center gap-1.5">
+                        <Star className="w-3.5 h-3.5 text-accent fill-accent" />
+                        <span className="text-sm font-medium text-white">{show.vote_average?.toFixed(1)}</span>
                       </div>
                     </div>
                   </div>
-                  <h3 className="mt-2 font-medium text-foreground line-clamp-1 group-hover:text-accent transition-colors">
+                  <h3 className="mt-3 text-sm font-medium text-foreground line-clamp-1 group-hover:text-accent transition-colors">
                     {show.name}
                   </h3>
-                  <p className="text-xs text-muted-foreground">{show.vote_count?.toLocaleString()} votes</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{show.vote_count?.toLocaleString()} votes</p>
                 </button>
               ))}
             </div>

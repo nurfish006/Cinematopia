@@ -53,13 +53,9 @@ export default function TVShowDetailsPage() {
     const fetchDetails = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/tv/${showId}`, {
-          cache: "no-store",
-        })
+        const response = await fetch(`/api/tv/${showId}`, { cache: "no-store" })
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch: ${response.status}`)
-        }
+        if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`)
 
         const data = await response.json()
 
@@ -80,9 +76,7 @@ export default function TVShowDetailsPage() {
       }
     }
 
-    if (showId) {
-      fetchDetails()
-    }
+    if (showId) fetchDetails()
   }, [showId])
 
   if (loading) {
@@ -90,7 +84,7 @@ export default function TVShowDetailsPage() {
       <>
         <Header onSearch={() => {}} />
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <div className="animate-pulse text-muted-foreground">Loading TV show details...</div>
+          <div className="w-8 h-8 rounded-full border-2 border-border border-t-accent animate-spin" />
         </div>
         <Footer />
       </>
@@ -104,7 +98,7 @@ export default function TVShowDetailsPage() {
         <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center space-y-4">
             <p className="text-muted-foreground">TV show not found</p>
-            <Button onClick={() => router.back()} variant="outline">
+            <Button onClick={() => router.back()} variant="outline" className="rounded-lg">
               Go Back
             </Button>
           </div>
@@ -119,21 +113,22 @@ export default function TVShowDetailsPage() {
       <Header onSearch={() => {}} />
 
       <main className="min-h-screen bg-background">
-        <div className="relative h-[50vh] min-h-[400px]">
+        {/* Hero backdrop */}
+        <div className="relative h-[55vh] min-h-[400px]">
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
               backgroundImage: `url(${show.backdrop_path ? `${IMAGE_BASE_URL}${show.backdrop_path}` : "/tv-show-backdrop.png"})`,
             }}
           >
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/40" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/30" />
           </div>
 
-          <div className="absolute top-4 left-4">
+          <div className="absolute top-6 left-6">
             <Button
               onClick={() => router.back()}
               variant="outline"
-              className="rounded-xl bg-background/50 backdrop-blur-sm"
+              className="rounded-lg bg-background/50 backdrop-blur-sm border-border/50 hover:bg-background/80"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
@@ -141,24 +136,32 @@ export default function TVShowDetailsPage() {
           </div>
         </div>
 
-        <div className="container mx-auto px-4 -mt-32 relative z-10">
-          <div className="flex flex-col md:flex-row gap-8">
-            <div className="w-48 md:w-64 shrink-0 mx-auto md:mx-0">
+        {/* Content */}
+        <div className="container mx-auto px-6 -mt-40 relative z-10">
+          <div className="flex flex-col md:flex-row gap-10">
+            {/* Poster */}
+            <div className="w-52 md:w-64 shrink-0 mx-auto md:mx-0">
               <img
                 src={show.poster_path ? `${IMAGE_BASE_URL}${show.poster_path}` : "/mystery-town-poster.png"}
                 alt={show.name}
-                className="w-full rounded-xl shadow-2xl ring-1 ring-white/10"
+                className="w-full rounded-xl shadow-2xl"
               />
             </div>
 
+            {/* Info */}
             <div className="flex-1 space-y-6">
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground text-balance">{show.name}</h1>
+                <h1 className="text-3xl md:text-4xl font-semibold text-foreground tracking-tight text-balance">
+                  {show.name}
+                </h1>
 
                 {show.genres && show.genres.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3">
+                  <div className="flex flex-wrap gap-2 mt-4">
                     {show.genres.map((genre) => (
-                      <span key={genre.id} className="text-sm px-3 py-1 bg-accent/20 text-accent rounded-full">
+                      <span
+                        key={genre.id}
+                        className="text-xs font-medium px-3 py-1.5 bg-secondary text-secondary-foreground rounded-full"
+                      >
                         {genre.name}
                       </span>
                     ))}
@@ -172,9 +175,7 @@ export default function TVShowDetailsPage() {
                   <span className="font-semibold text-foreground text-lg">{show.vote_average?.toFixed(1)}</span>
                   <span className="text-muted-foreground">/10</span>
                 </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <span>{show.vote_count?.toLocaleString()} votes</span>
-                </div>
+                <span className="text-muted-foreground">{show.vote_count?.toLocaleString()} votes</span>
                 {show.first_air_date && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Calendar className="w-4 h-4" />
@@ -185,21 +186,21 @@ export default function TVShowDetailsPage() {
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Tv className="w-4 h-4" />
                     <span>
-                      {show.number_of_seasons} Season
-                      {show.number_of_seasons > 1 ? "s" : ""}
+                      {show.number_of_seasons} Season{show.number_of_seasons > 1 ? "s" : ""}
                     </span>
                   </div>
                 )}
               </div>
 
-              <p className="text-foreground/80 text-lg leading-relaxed">{show.overview}</p>
+              <p className="text-foreground/70 text-base leading-relaxed max-w-2xl">{show.overview}</p>
             </div>
           </div>
 
+          {/* Video player */}
           {selectedVideo && (
-            <section className="mt-12 space-y-4">
-              <h2 className="text-2xl font-bold text-foreground">{selectedVideo.name}</h2>
-              <div className="aspect-video rounded-xl overflow-hidden bg-card">
+            <section className="mt-14 space-y-4">
+              <h2 className="text-xl font-semibold text-foreground tracking-tight">{selectedVideo.name}</h2>
+              <div className="aspect-video rounded-xl overflow-hidden bg-secondary">
                 <iframe
                   src={`https://www.youtube.com/embed/${selectedVideo.key}?autoplay=0&rel=0`}
                   title={selectedVideo.name}
@@ -211,18 +212,17 @@ export default function TVShowDetailsPage() {
             </section>
           )}
 
+          {/* More videos */}
           {videos.length > 1 && (
-            <section className="mt-8 space-y-4">
-              <h3 className="text-xl font-semibold text-foreground">More Videos ({videos.length})</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <section className="mt-10 space-y-4">
+              <h3 className="text-lg font-medium text-foreground">More Videos</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 {videos.map((video) => (
                   <button
                     key={video.id}
                     onClick={() => setSelectedVideo(video)}
                     className={`group relative aspect-video rounded-lg overflow-hidden transition-all ${
-                      selectedVideo?.id === video.id
-                        ? "ring-2 ring-accent shadow-lg shadow-accent/30"
-                        : "ring-1 ring-border hover:ring-accent/50"
+                      selectedVideo?.id === video.id ? "ring-2 ring-accent" : "hover:ring-2 hover:ring-border"
                     }`}
                   >
                     <img
@@ -230,11 +230,8 @@ export default function TVShowDetailsPage() {
                       alt={video.name}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <Play className="w-8 h-8 text-white fill-white" />
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
-                      <p className="text-xs text-white line-clamp-1">{video.name}</p>
                     </div>
                   </button>
                 ))}
@@ -242,12 +239,13 @@ export default function TVShowDetailsPage() {
             </section>
           )}
 
+          {/* Cast */}
           {cast.length > 0 && (
-            <section className="mt-12 space-y-4 pb-12">
-              <h2 className="text-2xl font-bold text-foreground">Cast</h2>
+            <section className="mt-14 space-y-4 pb-16">
+              <h2 className="text-xl font-semibold text-foreground tracking-tight">Cast</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {cast.map((actor) => (
-                  <div key={actor.id} className="bg-card rounded-xl overflow-hidden ring-1 ring-border">
+                  <div key={actor.id} className="bg-card rounded-xl overflow-hidden border border-border/50">
                     {actor.profile_path ? (
                       <img
                         src={`https://image.tmdb.org/t/p/w300${actor.profile_path}`}
@@ -255,13 +253,13 @@ export default function TVShowDetailsPage() {
                         className="w-full aspect-[3/4] object-cover"
                       />
                     ) : (
-                      <div className="w-full aspect-[3/4] bg-muted flex items-center justify-center text-muted-foreground">
+                      <div className="w-full aspect-[3/4] bg-secondary flex items-center justify-center text-muted-foreground text-sm">
                         No Image
                       </div>
                     )}
                     <div className="p-3">
-                      <p className="font-medium text-foreground line-clamp-1">{actor.name}</p>
-                      <p className="text-sm text-muted-foreground line-clamp-1">{actor.character}</p>
+                      <p className="font-medium text-foreground text-sm line-clamp-1">{actor.name}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{actor.character}</p>
                     </div>
                   </div>
                 ))}

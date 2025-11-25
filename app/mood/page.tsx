@@ -24,14 +24,14 @@ interface MoodSuggestion {
 }
 
 const moodSuggestions: MoodSuggestion[] = [
-  { label: "Cozy evening in", prompt: "I want something warm and comforting for a cozy night in" },
-  { label: "Need a good cry", prompt: "I'm in the mood for an emotional movie that will make me cry" },
+  { label: "Cozy evening", prompt: "I want something warm and comforting for a cozy night in" },
+  { label: "Need a cry", prompt: "I'm in the mood for an emotional movie that will make me cry" },
   { label: "Mind-bending", prompt: "I want something that will blow my mind with twists" },
   { label: "Date night", prompt: "Looking for a romantic but not cheesy movie for date night" },
-  { label: "Pure excitement", prompt: "I need non-stop action and excitement" },
-  { label: "Feeling nostalgic", prompt: "I'm feeling nostalgic and want something classic" },
+  { label: "Pure thrill", prompt: "I need non-stop action and excitement" },
+  { label: "Nostalgic", prompt: "I'm feeling nostalgic and want something classic" },
   { label: "Make me laugh", prompt: "I desperately need to laugh until my stomach hurts" },
-  { label: "Quiet late night", prompt: "It's late and I want something captivating but not too intense" },
+  { label: "Late night", prompt: "It's late and I want something captivating but not too intense" },
 ]
 
 export default function MoodMatcherPage() {
@@ -40,7 +40,6 @@ export default function MoodMatcherPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
   const [aiExplanation, setAiExplanation] = useState("")
-  const [focusedInput, setFocusedInput] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
@@ -48,7 +47,7 @@ export default function MoodMatcherPage() {
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto"
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 140)}px`
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`
     }
   }, [mood])
 
@@ -98,61 +97,51 @@ export default function MoodMatcherPage() {
       <Header onSearch={() => {}} />
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative">
-          <div className="container mx-auto px-4 pt-20 pb-8 md:pt-32 md:pb-12">
-            <div className="max-w-2xl mx-auto text-center">
-              {/* Subtle badge */}
-              <div className="inline-flex items-center gap-1.5 mb-8">
-                <Sparkles className="w-3.5 h-3.5 text-accent" />
-                <span className="text-xs font-medium tracking-wide uppercase text-muted-foreground">Mood Matcher</span>
-              </div>
-
-              {/* Main headline */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-normal text-foreground mb-4 tracking-tight leading-tight text-balance">
-                What are you in the mood for?
-              </h1>
-
-              <p className="text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
-                Describe your mood and we'll find the perfect film.
-              </p>
+        {/* Hero */}
+        <section className="container mx-auto px-6 pt-20 pb-10 md:pt-28 md:pb-12">
+          <div className="max-w-xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 mb-6">
+              <Sparkles className="w-4 h-4 text-accent" />
+              <span className="text-xs font-medium tracking-widest uppercase text-muted-foreground">Mood Match</span>
             </div>
+
+            <h1 className="text-3xl sm:text-4xl font-semibold text-foreground tracking-tight leading-snug text-balance">
+              What are you in the mood for?
+            </h1>
+
+            <p className="text-muted-foreground mt-4 text-base max-w-sm mx-auto">
+              Describe how you feel and discover your perfect film.
+            </p>
           </div>
         </section>
 
-        {/* Input Section */}
-        <section className="container mx-auto px-4 pb-8">
-          <div className="max-w-xl mx-auto">
+        {/* Input */}
+        <section className="container mx-auto px-6 pb-10">
+          <div className="max-w-lg mx-auto">
             <form onSubmit={handleSubmit}>
-              <div
-                className={`relative rounded-xl transition-all duration-200 ${
-                  focusedInput ? "ring-2 ring-accent/20" : ""
-                }`}
-              >
+              <div className="relative">
                 <textarea
                   ref={textareaRef}
                   value={mood}
                   onChange={(e) => setMood(e.target.value)}
-                  onFocus={() => setFocusedInput(true)}
-                  onBlur={() => setFocusedInput(false)}
                   placeholder="I'm feeling..."
-                  className="w-full min-h-[100px] max-h-[140px] resize-none bg-card text-foreground placeholder:text-muted-foreground/50 focus:outline-none p-5 pb-14 rounded-xl border border-border text-base leading-relaxed"
+                  className="w-full min-h-[100px] max-h-[120px] resize-none bg-card text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/20 p-5 pb-16 rounded-xl border border-border text-base leading-relaxed transition-shadow"
                   disabled={isLoading}
                 />
 
-                <div className="absolute bottom-3 right-3">
+                <div className="absolute bottom-4 right-4">
                   <Button
                     type="submit"
                     disabled={!mood.trim() || isLoading}
                     size="sm"
-                    className="rounded-lg bg-foreground text-background hover:bg-foreground/90 disabled:opacity-30 gap-1.5 px-4 h-9 text-sm font-medium"
+                    className="rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 disabled:opacity-40 gap-2 px-5 h-9 text-sm font-medium"
                   >
                     {isLoading ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                       <>
                         Find films
-                        <ArrowRight className="w-3.5 h-3.5" />
+                        <ArrowRight className="w-4 h-4" />
                       </>
                     )}
                   </Button>
@@ -160,7 +149,7 @@ export default function MoodMatcherPage() {
               </div>
             </form>
 
-            {/* Mood Suggestions */}
+            {/* Suggestions */}
             {!hasSearched && (
               <div className="mt-6">
                 <div className="flex flex-wrap gap-2 justify-center">
@@ -168,7 +157,7 @@ export default function MoodMatcherPage() {
                     <button
                       key={suggestion.label}
                       onClick={() => handleSuggestionClick(suggestion)}
-                      className="px-3.5 py-2 rounded-full bg-secondary text-secondary-foreground hover:bg-muted transition-colors duration-150 text-sm"
+                      className="px-4 py-2 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/70 transition-colors text-sm"
                     >
                       {suggestion.label}
                     </button>
@@ -179,9 +168,9 @@ export default function MoodMatcherPage() {
           </div>
         </section>
 
-        {/* Loading State */}
+        {/* Loading */}
         {isLoading && (
-          <section className="container mx-auto px-4 py-20">
+          <section className="container mx-auto px-6 py-20">
             <div className="flex flex-col items-center justify-center gap-4">
               <div className="w-10 h-10 rounded-full border-2 border-border border-t-accent animate-spin" />
               <p className="text-sm text-muted-foreground">Finding your perfect match...</p>
@@ -189,20 +178,18 @@ export default function MoodMatcherPage() {
           </section>
         )}
 
-        {/* Results Section */}
+        {/* Results */}
         {!isLoading && hasSearched && (
-          <section className="container mx-auto px-4 py-8 pb-20">
+          <section className="container mx-auto px-6 py-8 pb-20">
             <div className="max-w-4xl mx-auto">
-              {/* Explanation */}
               {aiExplanation && (
                 <div className="mb-10 text-center">
-                  <p className="text-muted-foreground leading-relaxed max-w-lg mx-auto">{aiExplanation}</p>
+                  <p className="text-muted-foreground max-w-md mx-auto">{aiExplanation}</p>
                 </div>
               )}
 
               {recommendations.length > 0 ? (
                 <>
-                  {/* Results Header */}
                   <div className="flex items-center justify-between mb-6">
                     <p className="text-sm text-muted-foreground">{recommendations.length} films found</p>
                     <button
@@ -214,29 +201,24 @@ export default function MoodMatcherPage() {
                     </button>
                   </div>
 
-                  {/* Movie Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
                     {recommendations.map((movie) => (
                       <Link key={movie.id} href={`/movie/${movie.id}`} className="group">
-                        {/* Poster */}
-                        <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-muted mb-3">
+                        <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-secondary">
                           <img
                             src={
                               movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : "/abstract-movie-poster.png"
                             }
                             alt={movie.title}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />
-
-                          {/* Rating */}
-                          <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded bg-background/80 backdrop-blur-sm text-xs font-medium">
+                          <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-1 rounded-md bg-background/80 backdrop-blur-sm text-xs font-medium">
                             <Star className="w-3 h-3 text-accent fill-accent" />
                             {movie.vote_average?.toFixed(1)}
                           </div>
                         </div>
 
-                        {/* Info */}
-                        <h3 className="font-medium text-foreground text-sm leading-snug line-clamp-1 group-hover:text-accent transition-colors">
+                        <h3 className="mt-3 text-sm font-medium text-foreground line-clamp-1 group-hover:text-accent transition-colors">
                           {movie.title}
                         </h3>
 
@@ -247,14 +229,13 @@ export default function MoodMatcherPage() {
                         )}
 
                         {movie.reason && (
-                          <p className="text-xs text-accent mt-2 line-clamp-2 leading-relaxed">{movie.reason}</p>
+                          <p className="text-xs text-accent/80 mt-2 line-clamp-2 leading-relaxed">{movie.reason}</p>
                         )}
                       </Link>
                     ))}
                   </div>
                 </>
               ) : (
-                /* Empty State */
                 <div className="text-center py-16">
                   <p className="text-muted-foreground mb-4">No matches found for this mood.</p>
                   <Button variant="outline" size="sm" onClick={handleReset} className="rounded-lg bg-transparent">

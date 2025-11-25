@@ -46,14 +46,14 @@ export default function Home() {
         <FeaturedBanner movies={featuredMovies} imageBaseUrl={IMAGE_BASE_URL} />
       )}
 
-      <main className="container mx-auto px-4 py-8 space-y-12">
+      <main className="container mx-auto px-6 py-12 space-y-16">
         {!isLoading && topRatedMovies.length > 0 && (
-          <MovieCarousel title="Top Rated Movies" movies={topRatedMovies} imageBaseUrl={IMAGE_BASE_URL} />
+          <MovieCarousel title="Top Rated" movies={topRatedMovies} imageBaseUrl={IMAGE_BASE_URL} />
         )}
 
         <MovieGrid title="Now Playing" filter="now_playing" imageBaseUrl={IMAGE_BASE_URL} />
 
-        <MovieGrid title="Popular Movies" filter="popular" imageBaseUrl={IMAGE_BASE_URL} />
+        <MovieGrid title="Popular" filter="popular" imageBaseUrl={IMAGE_BASE_URL} />
       </main>
 
       <Footer />

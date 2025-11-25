@@ -3,84 +3,87 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Completely refined color palette - sophisticated cream/charcoal with warm amber accent */
+/* Elegant Cinematopia Design System */
+/* Refined palette: warm ivory light mode, deep charcoal dark mode, with sophisticated copper accent */
+
 :root {
-  --background: oklch(0.98 0.002 90);
-  --foreground: oklch(0.15 0.01 60);
+  /* Light mode - warm ivory tones */
+  --background: oklch(0.985 0.005 80);
+  --foreground: oklch(0.18 0.015 50);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.01 60);
+  --card-foreground: oklch(0.18 0.015 50);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.01 60);
-  --primary: oklch(0.18 0.01 60);
+  --popover-foreground: oklch(0.18 0.015 50);
+  --primary: oklch(0.2 0.015 50);
   --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.96 0.004 90);
-  --secondary-foreground: oklch(0.3 0.01 60);
-  --muted: oklch(0.94 0.004 90);
-  --muted-foreground: oklch(0.5 0.01 60);
-  /* Warm amber accent - sophisticated and elegant */
-  --accent: oklch(0.7 0.12 70);
-  --accent-foreground: oklch(0.15 0.01 60);
+  --secondary: oklch(0.965 0.005 80);
+  --secondary-foreground: oklch(0.35 0.01 50);
+  --muted: oklch(0.955 0.005 80);
+  --muted-foreground: oklch(0.45 0.01 50);
+  /* Refined copper accent - warm and sophisticated */
+  --accent: oklch(0.62 0.14 45);
+  --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.55 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.9 0.004 90);
-  --input: oklch(0.94 0.004 90);
-  --ring: oklch(0.7 0.12 70);
-  --chart-1: oklch(0.7 0.12 70);
-  --chart-2: oklch(0.6 0.1 180);
-  --chart-3: oklch(0.5 0.08 220);
-  --chart-4: oklch(0.7 0.1 100);
-  --chart-5: oklch(0.65 0.12 50);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.98 0.002 90);
-  --sidebar-foreground: oklch(0.15 0.01 60);
-  --sidebar-primary: oklch(0.18 0.01 60);
+  --border: oklch(0.92 0.005 80);
+  --input: oklch(0.96 0.005 80);
+  --ring: oklch(0.62 0.14 45);
+  --chart-1: oklch(0.62 0.14 45);
+  --chart-2: oklch(0.55 0.12 180);
+  --chart-3: oklch(0.5 0.1 220);
+  --chart-4: oklch(0.6 0.1 100);
+  --chart-5: oklch(0.58 0.12 50);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.985 0.005 80);
+  --sidebar-foreground: oklch(0.18 0.015 50);
+  --sidebar-primary: oklch(0.2 0.015 50);
   --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.94 0.004 90);
-  --sidebar-accent-foreground: oklch(0.3 0.01 60);
-  --sidebar-border: oklch(0.9 0.004 90);
-  --sidebar-ring: oklch(0.7 0.12 70);
+  --sidebar-accent: oklch(0.955 0.005 80);
+  --sidebar-accent-foreground: oklch(0.35 0.01 50);
+  --sidebar-border: oklch(0.92 0.005 80);
+  --sidebar-ring: oklch(0.62 0.14 45);
 }
 
-/* Refined dark mode - true cinema dark with warm accent */
+/* Dark mode - deep cinematic charcoal with warm undertones */
 .dark {
-  --background: oklch(0.1 0.01 270);
-  --foreground: oklch(0.94 0.004 90);
-  --card: oklch(0.13 0.01 270);
-  --card-foreground: oklch(0.94 0.004 90);
-  --popover: oklch(0.13 0.01 270);
-  --popover-foreground: oklch(0.94 0.004 90);
-  --primary: oklch(0.94 0.004 90);
-  --primary-foreground: oklch(0.1 0.01 270);
-  --secondary: oklch(0.16 0.01 270);
-  --secondary-foreground: oklch(0.88 0.004 90);
-  --muted: oklch(0.2 0.01 270);
-  --muted-foreground: oklch(0.55 0.01 90);
-  /* Brighter amber for dark mode visibility */
-  --accent: oklch(0.75 0.13 65);
-  --accent-foreground: oklch(0.12 0.01 270);
+  --background: oklch(0.12 0.015 280);
+  --foreground: oklch(0.92 0.005 80);
+  --card: oklch(0.15 0.015 280);
+  --card-foreground: oklch(0.92 0.005 80);
+  --popover: oklch(0.15 0.015 280);
+  --popover-foreground: oklch(0.92 0.005 80);
+  --primary: oklch(0.92 0.005 80);
+  --primary-foreground: oklch(0.12 0.015 280);
+  --secondary: oklch(0.18 0.015 280);
+  --secondary-foreground: oklch(0.82 0.005 80);
+  --muted: oklch(0.22 0.015 280);
+  --muted-foreground: oklch(0.55 0.01 80);
+  /* Brighter copper for dark mode legibility */
+  --accent: oklch(0.72 0.15 50);
+  --accent-foreground: oklch(0.12 0.015 280);
   --destructive: oklch(0.5 0.18 25);
-  --destructive-foreground: oklch(0.94 0 0);
-  --border: oklch(0.2 0.01 270);
-  --input: oklch(0.18 0.01 270);
-  --ring: oklch(0.75 0.13 65);
-  --chart-1: oklch(0.75 0.13 65);
+  --destructive-foreground: oklch(0.92 0 0);
+  --border: oklch(0.25 0.015 280);
+  --input: oklch(0.2 0.015 280);
+  --ring: oklch(0.72 0.15 50);
+  --chart-1: oklch(0.72 0.15 50);
   --chart-2: oklch(0.55 0.15 30);
   --chart-3: oklch(0.5 0.1 250);
   --chart-4: oklch(0.5 0.1 140);
   --chart-5: oklch(0.6 0.15 40);
-  --sidebar: oklch(0.12 0.01 270);
-  --sidebar-foreground: oklch(0.94 0.004 90);
-  --sidebar-primary: oklch(0.75 0.13 65);
-  --sidebar-primary-foreground: oklch(0.94 0.004 90);
-  --sidebar-accent: oklch(0.16 0.01 270);
-  --sidebar-accent-foreground: oklch(0.88 0.004 90);
-  --sidebar-border: oklch(0.2 0.01 270);
-  --sidebar-ring: oklch(0.4 0 0);
+  --sidebar: oklch(0.14 0.015 280);
+  --sidebar-foreground: oklch(0.92 0.005 80);
+  --sidebar-primary: oklch(0.72 0.15 50);
+  --sidebar-primary-foreground: oklch(0.92 0.005 80);
+  --sidebar-accent: oklch(0.18 0.015 280);
+  --sidebar-accent-foreground: oklch(0.82 0.005 80);
+  --sidebar-border: oklch(0.25 0.015 280);
+  --sidebar-ring: oklch(0.35 0 0);
 }
 
 @theme inline {
-  --font-sans: "Geist", "Geist Fallback";
-  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --font-sans: "Geist", "Geist Fallback", system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -128,10 +131,10 @@
   }
 }
 
-/* Minimal elegant scrollbar */
+/* Elegant minimal scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -139,10 +142,20 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 10px;
+  background: var(--muted);
+  border-radius: 99px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

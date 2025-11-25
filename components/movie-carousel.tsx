@@ -27,27 +27,23 @@ export default function MovieCarousel({ title, movies, imageBaseUrl }: MovieCaro
   }
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-5">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-foreground">{title}</h2>
-        <Link href="/explore" className="text-sm text-accent hover:underline font-medium">
-          See all
+        <h2 className="text-xl font-semibold text-foreground tracking-tight">{title}</h2>
+        <Link href="/explore" className="text-sm text-accent hover:text-accent/80 font-medium transition-colors">
+          View all
         </Link>
       </div>
 
-      <div className="relative group">
-        <div
-          ref={scrollContainerRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        >
+      <div className="relative group/container">
+        <div ref={scrollContainerRef} className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 scroll-smooth">
           {movies.map((movie) => (
             <button
               key={movie.id}
               onClick={() => router.push(`/movie/${movie.id}`)}
-              className="shrink-0 w-40 md:w-48 group/card text-left"
+              className="shrink-0 w-40 md:w-44 group text-left"
             >
-              <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-card ring-1 ring-border group-hover/card:ring-accent transition-all duration-300">
+              <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-secondary">
                 <img
                   src={
                     movie.poster_path
@@ -55,24 +51,26 @@ export default function MovieCarousel({ title, movies, imageBaseUrl }: MovieCaro
                       : "/abstract-movie-poster.png"
                   }
                   alt={movie.title}
-                  className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
+                <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-1 rounded-md bg-background/80 backdrop-blur-sm">
                   <Star className="w-3 h-3 text-accent fill-accent" />
                   <span className="text-xs font-medium">{movie.vote_average?.toFixed(1)}</span>
                 </div>
               </div>
-              <h3 className="mt-2 font-medium text-foreground line-clamp-1 group-hover/card:text-accent transition-colors">
+              <h3 className="mt-3 text-sm font-medium text-foreground line-clamp-1 group-hover:text-accent transition-colors">
                 {movie.title}
               </h3>
             </button>
           ))}
         </div>
 
+        {/* Navigation arrows */}
         <Button
           onClick={() => scroll("left")}
           size="icon"
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-accent text-accent-foreground hover:bg-accent/90 opacity-0 group-hover:opacity-100 transition-opacity rounded-full shadow-lg"
+          className="absolute left-0 top-1/3 -translate-x-3 w-9 h-9 bg-background border border-border shadow-lg rounded-full opacity-0 group-hover/container:opacity-100 transition-opacity hover:bg-secondary"
+          variant="ghost"
         >
           <ChevronLeft className="w-5 h-5" />
         </Button>
@@ -80,7 +78,8 @@ export default function MovieCarousel({ title, movies, imageBaseUrl }: MovieCaro
         <Button
           onClick={() => scroll("right")}
           size="icon"
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-accent text-accent-foreground hover:bg-accent/90 opacity-0 group-hover:opacity-100 transition-opacity rounded-full shadow-lg"
+          className="absolute right-0 top-1/3 translate-x-3 w-9 h-9 bg-background border border-border shadow-lg rounded-full opacity-0 group-hover/container:opacity-100 transition-opacity hover:bg-secondary"
+          variant="ghost"
         >
           <ChevronRight className="w-5 h-5" />
         </Button>

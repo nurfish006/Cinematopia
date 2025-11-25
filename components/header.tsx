@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { Search, Moon, Sun, X, Menu, Film, Sparkles } from "lucide-react"
+import { Search, Moon, Sun, X, Menu, Clapperboard, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -131,98 +131,98 @@ export default function Header({ onSearch }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center">
-            <Film className="w-6 h-6 text-accent-foreground" />
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50">
+      <div className="container mx-auto px-6 h-16 flex items-center justify-between gap-6">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-3 shrink-0 group">
+          <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center transition-transform group-hover:scale-105">
+            <Clapperboard className="w-5 h-5 text-accent-foreground" />
           </div>
-          <span className="text-xl font-bold text-foreground hidden sm:block">Cinematopia</span>
+          <span className="text-lg font-semibold tracking-tight text-foreground hidden sm:block">Cinematopia</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6">
-          <Link
-            href="/"
-            className={`font-medium transition-colors ${
-              isActive("/") ? "text-accent" : "text-foreground/70 hover:text-accent"
-            }`}
-          >
-            Home
-          </Link>
-          <Link
-            href="/explore"
-            className={`font-medium transition-colors ${
-              isActive("/explore") ? "text-accent" : "text-foreground/70 hover:text-accent"
-            }`}
-          >
-            Explore
-          </Link>
-          <Link
-            href="/tv-shows"
-            className={`font-medium transition-colors ${
-              isActive("/tv-shows") ? "text-accent" : "text-foreground/70 hover:text-accent"
-            }`}
-          >
-            TV Shows
-          </Link>
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-1">
+          {[
+            { href: "/", label: "Home" },
+            { href: "/explore", label: "Explore" },
+            { href: "/tv-shows", label: "TV Shows" },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isActive(item.href)
+                  ? "bg-secondary text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
           <Link
             href="/mood"
-            className={`font-medium transition-colors flex items-center gap-1.5 ${
-              isActive("/mood") ? "text-accent" : "text-foreground/70 hover:text-accent"
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              isActive("/mood")
+                ? "bg-accent/15 text-accent"
+                : "text-muted-foreground hover:text-accent hover:bg-accent/10"
             }`}
           >
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-3.5 h-3.5" />
             Mood Match
           </Link>
         </nav>
 
+        {/* Mobile menu toggle */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 hover:bg-foreground/10 rounded-lg transition"
+          className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
           aria-label="Toggle menu"
         >
           {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        <div className="flex-1 max-w-md relative" ref={dropdownRef}>
+        {/* Search */}
+        <div className="flex-1 max-w-sm relative" ref={dropdownRef}>
           <form onSubmit={handleSearch} className="relative">
             <input
               type="text"
-              placeholder="Search movies..."
+              placeholder="Search films..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="w-full px-4 py-2.5 pl-10 bg-card border border-border rounded-xl text-foreground placeholder:text-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition"
+              className="w-full h-10 px-4 pl-10 bg-secondary/50 border-0 rounded-lg text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:bg-secondary transition-all text-sm"
             />
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
             {searchValue && (
               <button
                 type="button"
                 onClick={handleClear}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             )}
           </form>
 
+          {/* Search dropdown */}
           {showResults && searchResults.length > 0 && (
-            <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-xl shadow-2xl overflow-hidden z-50">
+            <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-xl shadow-xl overflow-hidden">
               {searchResults.map((movie) => (
                 <button
                   key={movie.id}
                   onClick={() => handleMovieClick(movie.id)}
-                  className="w-full flex items-center gap-3 p-3 hover:bg-accent/10 transition text-left"
+                  className="w-full flex items-center gap-3 p-3 hover:bg-secondary/50 transition-colors text-left"
                 >
                   {movie.poster_path && (
                     <img
                       src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
                       alt={movie.title}
-                      className="w-10 h-14 object-cover rounded"
+                      className="w-9 h-13 object-cover rounded-md"
                     />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-foreground truncate">{movie.title}</p>
-                    <p className="text-sm text-muted-foreground">{movie.release_date?.split("-")[0] || "N/A"}</p>
+                    <p className="font-medium text-foreground text-sm truncate">{movie.title}</p>
+                    <p className="text-xs text-muted-foreground">{movie.release_date?.split("-")[0] || "N/A"}</p>
                   </div>
                 </button>
               ))}
@@ -231,52 +231,45 @@ export default function Header({ onSearch }: HeaderProps) {
 
           {showResults && isSearching && (
             <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-xl p-4 text-center">
-              <span className="text-muted-foreground">Searching...</span>
+              <span className="text-sm text-muted-foreground">Searching...</span>
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Theme toggle */}
+        <div className="flex items-center">
           {mounted && (
-            <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-xl">
-              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-lg w-9 h-9 hover:bg-secondary">
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
           )}
         </div>
       </div>
 
+      {/* Mobile navigation */}
       {mobileMenuOpen && (
-        <nav className="md:hidden border-t border-border bg-background p-4 flex flex-col gap-2">
-          <Link
-            href="/"
-            onClick={() => setMobileMenuOpen(false)}
-            className={`px-4 py-2 rounded-lg font-medium ${isActive("/") ? "bg-accent text-accent-foreground" : ""}`}
-          >
-            Home
-          </Link>
-          <Link
-            href="/explore"
-            onClick={() => setMobileMenuOpen(false)}
-            className={`px-4 py-2 rounded-lg font-medium ${
-              isActive("/explore") ? "bg-accent text-accent-foreground" : ""
-            }`}
-          >
-            Explore
-          </Link>
-          <Link
-            href="/tv-shows"
-            onClick={() => setMobileMenuOpen(false)}
-            className={`px-4 py-2 rounded-lg font-medium ${
-              isActive("/tv-shows") ? "bg-accent text-accent-foreground" : ""
-            }`}
-          >
-            TV Shows
-          </Link>
+        <nav className="md:hidden border-t border-border bg-background px-4 py-3 space-y-1">
+          {[
+            { href: "/", label: "Home" },
+            { href: "/explore", label: "Explore" },
+            { href: "/tv-shows", label: "TV Shows" },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                isActive(item.href) ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-secondary/50"
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
           <Link
             href="/mood"
             onClick={() => setMobileMenuOpen(false)}
-            className={`px-4 py-2 rounded-lg font-medium flex items-center gap-2 ${
-              isActive("/mood") ? "bg-accent text-accent-foreground" : ""
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              isActive("/mood") ? "bg-accent/15 text-accent" : "text-muted-foreground hover:bg-accent/10"
             }`}
           >
             <Sparkles className="w-4 h-4" />
