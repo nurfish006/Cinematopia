@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Film, Loader2, Star, RotateCcw } from "lucide-react"
+import { ArrowRight, Loader2, Star, RotateCcw, Sparkles } from "lucide-react"
 import Link from "next/link"
 
 interface Movie {
@@ -21,18 +21,17 @@ interface Movie {
 interface MoodSuggestion {
   label: string
   prompt: string
-  icon: string
 }
 
 const moodSuggestions: MoodSuggestion[] = [
-  { label: "Cozy Evening", prompt: "I want something warm and comforting for a cozy night in", icon: "🌙" },
-  { label: "Emotional", prompt: "I'm in the mood for an emotional movie that will make me cry", icon: "💫" },
-  { label: "Mind-Bending", prompt: "I want something that will blow my mind with twists", icon: "🌀" },
-  { label: "Date Night", prompt: "Looking for a romantic but not cheesy movie for date night", icon: "✨" },
-  { label: "Thrilling", prompt: "I need non-stop action and excitement", icon: "⚡" },
-  { label: "Nostalgic", prompt: "I'm feeling nostalgic and want something classic", icon: "🎞" },
-  { label: "Comedy", prompt: "I desperately need to laugh until my stomach hurts", icon: "😄" },
-  { label: "Late Night", prompt: "It's late and I want something captivating but not too intense", icon: "🌃" },
+  { label: "Cozy evening in", prompt: "I want something warm and comforting for a cozy night in" },
+  { label: "Need a good cry", prompt: "I'm in the mood for an emotional movie that will make me cry" },
+  { label: "Mind-bending", prompt: "I want something that will blow my mind with twists" },
+  { label: "Date night", prompt: "Looking for a romantic but not cheesy movie for date night" },
+  { label: "Pure excitement", prompt: "I need non-stop action and excitement" },
+  { label: "Feeling nostalgic", prompt: "I'm feeling nostalgic and want something classic" },
+  { label: "Make me laugh", prompt: "I desperately need to laugh until my stomach hurts" },
+  { label: "Quiet late night", prompt: "It's late and I want something captivating but not too intense" },
 ]
 
 export default function MoodMatcherPage() {
@@ -49,7 +48,7 @@ export default function MoodMatcherPage() {
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto"
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 140)}px`
     }
   }, [mood])
 
@@ -100,37 +99,34 @@ export default function MoodMatcherPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative overflow-hidden">
-          {/* Subtle gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-b from-accent/[0.03] via-transparent to-transparent pointer-events-none" />
-
-          <div className="container mx-auto px-4 pt-16 pb-12 md:pt-24 md:pb-16">
-            <div className="max-w-3xl mx-auto text-center">
-              {/* Elegant label */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent mb-8">
-                <span className="text-xs font-medium tracking-widest uppercase">Mood Matcher</span>
+        <section className="relative">
+          <div className="container mx-auto px-4 pt-20 pb-8 md:pt-32 md:pb-12">
+            <div className="max-w-2xl mx-auto text-center">
+              {/* Subtle badge */}
+              <div className="inline-flex items-center gap-1.5 mb-8">
+                <Sparkles className="w-3.5 h-3.5 text-accent" />
+                <span className="text-xs font-medium tracking-wide uppercase text-muted-foreground">Mood Matcher</span>
               </div>
 
-              {/* Main headline - elegant serif-inspired weight */}
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-light text-foreground mb-6 tracking-tight text-balance leading-[1.1]">
-                Find Films That
-                <span className="block font-normal text-accent">Match Your Mood</span>
+              {/* Main headline */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-normal text-foreground mb-4 tracking-tight leading-tight text-balance">
+                What are you in the mood for?
               </h1>
 
-              <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed text-pretty">
-                Describe how you're feeling, and we'll curate the perfect selection for your moment.
+              <p className="text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
+                Describe your mood and we'll find the perfect film.
               </p>
             </div>
           </div>
         </section>
 
         {/* Input Section */}
-        <section className="container mx-auto px-4 pb-12">
-          <div className="max-w-2xl mx-auto">
+        <section className="container mx-auto px-4 pb-8">
+          <div className="max-w-xl mx-auto">
             <form onSubmit={handleSubmit}>
               <div
-                className={`relative bg-card rounded-2xl border transition-all duration-300 ${
-                  focusedInput ? "border-accent/40 shadow-lg shadow-accent/5" : "border-border shadow-sm"
+                className={`relative rounded-xl transition-all duration-200 ${
+                  focusedInput ? "ring-2 ring-accent/20" : ""
                 }`}
               >
                 <textarea
@@ -139,29 +135,24 @@ export default function MoodMatcherPage() {
                   onChange={(e) => setMood(e.target.value)}
                   onFocus={() => setFocusedInput(true)}
                   onBlur={() => setFocusedInput(false)}
-                  placeholder="I'm in the mood for..."
-                  className="w-full min-h-[120px] max-h-[160px] resize-none bg-transparent text-foreground text-lg placeholder:text-muted-foreground/60 focus:outline-none p-6 pb-16"
+                  placeholder="I'm feeling..."
+                  className="w-full min-h-[100px] max-h-[140px] resize-none bg-card text-foreground placeholder:text-muted-foreground/50 focus:outline-none p-5 pb-14 rounded-xl border border-border text-base leading-relaxed"
                   disabled={isLoading}
                 />
 
-                <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between p-4 border-t border-border/50">
-                  <span className="text-xs text-muted-foreground/60 hidden sm:block">
-                    The more you share, the better the match
-                  </span>
+                <div className="absolute bottom-3 right-3">
                   <Button
                     type="submit"
                     disabled={!mood.trim() || isLoading}
-                    className="ml-auto rounded-xl bg-foreground text-background hover:bg-foreground/90 disabled:opacity-40 gap-2 px-6 h-10 font-medium transition-all"
+                    size="sm"
+                    className="rounded-lg bg-foreground text-background hover:bg-foreground/90 disabled:opacity-30 gap-1.5 px-4 h-9 text-sm font-medium"
                   >
                     {isLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Finding...</span>
-                      </>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : (
                       <>
-                        <span>Find Films</span>
-                        <ArrowRight className="w-4 h-4" />
+                        Find films
+                        <ArrowRight className="w-3.5 h-3.5" />
                       </>
                     )}
                   </Button>
@@ -171,17 +162,15 @@ export default function MoodMatcherPage() {
 
             {/* Mood Suggestions */}
             {!hasSearched && (
-              <div className="mt-8">
-                <p className="text-sm text-muted-foreground mb-4 text-center">Quick suggestions</p>
+              <div className="mt-6">
                 <div className="flex flex-wrap gap-2 justify-center">
                   {moodSuggestions.map((suggestion) => (
                     <button
                       key={suggestion.label}
                       onClick={() => handleSuggestionClick(suggestion)}
-                      className="group flex items-center gap-2 px-4 py-2.5 rounded-full bg-secondary/50 hover:bg-secondary text-secondary-foreground transition-all duration-200 text-sm border border-transparent hover:border-border"
+                      className="px-3.5 py-2 rounded-full bg-secondary text-secondary-foreground hover:bg-muted transition-colors duration-150 text-sm"
                     >
-                      <span className="opacity-70 group-hover:opacity-100 transition-opacity">{suggestion.icon}</span>
-                      <span>{suggestion.label}</span>
+                      {suggestion.label}
                     </button>
                   ))}
                 </div>
@@ -192,111 +181,84 @@ export default function MoodMatcherPage() {
 
         {/* Loading State */}
         {isLoading && (
-          <section className="container mx-auto px-4 py-16">
-            <div className="flex flex-col items-center justify-center gap-6">
-              <div className="relative w-16 h-16">
-                <div className="absolute inset-0 rounded-full border-2 border-accent/20" />
-                <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-accent animate-spin" />
-                <Film className="absolute inset-0 m-auto w-6 h-6 text-accent/60" />
-              </div>
-              <p className="text-muted-foreground text-center">Curating your personalized selection...</p>
+          <section className="container mx-auto px-4 py-20">
+            <div className="flex flex-col items-center justify-center gap-4">
+              <div className="w-10 h-10 rounded-full border-2 border-border border-t-accent animate-spin" />
+              <p className="text-sm text-muted-foreground">Finding your perfect match...</p>
             </div>
           </section>
         )}
 
         {/* Results Section */}
         {!isLoading && hasSearched && (
-          <section className="container mx-auto px-4 pb-20">
-            <div className="max-w-5xl mx-auto">
-              {/* AI Explanation */}
+          <section className="container mx-auto px-4 py-8 pb-20">
+            <div className="max-w-4xl mx-auto">
+              {/* Explanation */}
               {aiExplanation && (
-                <div className="mb-12 p-6 md:p-8 rounded-2xl bg-gradient-to-br from-accent/5 to-accent/[0.02] border border-accent/10">
-                  <p className="text-foreground/80 leading-relaxed text-center text-lg italic">"{aiExplanation}"</p>
+                <div className="mb-10 text-center">
+                  <p className="text-muted-foreground leading-relaxed max-w-lg mx-auto">{aiExplanation}</p>
                 </div>
               )}
 
               {recommendations.length > 0 ? (
                 <>
                   {/* Results Header */}
-                  <div className="flex items-center justify-between mb-8">
-                    <div>
-                      <h2 className="text-2xl md:text-3xl font-light text-foreground">Your Curated Selection</h2>
-                      <p className="text-muted-foreground mt-1">{recommendations.length} films matched to your mood</p>
-                    </div>
-                    <Button
-                      variant="ghost"
+                  <div className="flex items-center justify-between mb-6">
+                    <p className="text-sm text-muted-foreground">{recommendations.length} films found</p>
+                    <button
                       onClick={handleReset}
-                      className="rounded-xl gap-2 text-muted-foreground hover:text-foreground"
+                      className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      <RotateCcw className="w-4 h-4" />
-                      <span className="hidden sm:inline">Start Over</span>
-                    </Button>
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      Start over
+                    </button>
                   </div>
 
                   {/* Movie Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {recommendations.map((movie, index) => (
-                      <Link
-                        key={movie.id}
-                        href={`/movie/${movie.id}`}
-                        className="group relative bg-card rounded-2xl overflow-hidden border border-border hover:border-accent/30 transition-all duration-300 hover:shadow-xl hover:shadow-accent/5"
-                      >
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+                    {recommendations.map((movie) => (
+                      <Link key={movie.id} href={`/movie/${movie.id}`} className="group">
                         {/* Poster */}
-                        <div className="relative aspect-[2/3] overflow-hidden">
+                        <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-muted mb-3">
                           <img
                             src={
                               movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : "/abstract-movie-poster.png"
                             }
                             alt={movie.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                           />
-                          {/* Gradient overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                          {/* Rank badge */}
-                          <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center text-sm font-semibold text-foreground border border-border/50">
-                            {index + 1}
-                          </div>
-
-                          {/* Rating badge */}
-                          <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full bg-background/90 backdrop-blur-sm text-xs font-medium text-foreground border border-border/50">
+                          {/* Rating */}
+                          <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded bg-background/80 backdrop-blur-sm text-xs font-medium">
                             <Star className="w-3 h-3 text-accent fill-accent" />
                             {movie.vote_average?.toFixed(1)}
                           </div>
                         </div>
 
-                        {/* Content */}
-                        <div className="p-4">
-                          <h3 className="font-medium text-foreground text-lg line-clamp-1 group-hover:text-accent transition-colors">
-                            {movie.title}
-                          </h3>
+                        {/* Info */}
+                        <h3 className="font-medium text-foreground text-sm leading-snug line-clamp-1 group-hover:text-accent transition-colors">
+                          {movie.title}
+                        </h3>
 
-                          {movie.release_date && (
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {new Date(movie.release_date).getFullYear()}
-                            </p>
-                          )}
+                        {movie.release_date && (
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {new Date(movie.release_date).getFullYear()}
+                          </p>
+                        )}
 
-                          {movie.reason && (
-                            <p className="text-sm text-accent/80 mt-3 line-clamp-2 leading-relaxed">{movie.reason}</p>
-                          )}
-                        </div>
+                        {movie.reason && (
+                          <p className="text-xs text-accent mt-2 line-clamp-2 leading-relaxed">{movie.reason}</p>
+                        )}
                       </Link>
                     ))}
                   </div>
                 </>
               ) : (
                 /* Empty State */
-                <div className="text-center py-20">
-                  <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-6">
-                    <Film className="w-7 h-7 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-xl font-light text-foreground mb-2">No matches found</h3>
-                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                    Try describing your mood differently, or explore one of our suggestions.
-                  </p>
-                  <Button variant="outline" onClick={handleReset} className="rounded-xl bg-transparent">
-                    Try Again
+                <div className="text-center py-16">
+                  <p className="text-muted-foreground mb-4">No matches found for this mood.</p>
+                  <Button variant="outline" size="sm" onClick={handleReset} className="rounded-lg bg-transparent">
+                    Try a different mood
                   </Button>
                 </div>
               )}
