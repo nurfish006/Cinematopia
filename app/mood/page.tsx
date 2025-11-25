@@ -213,13 +213,12 @@ export default function MoodMatcherPage() {
                     {recommendations.map((movie) => (
                       <Link key={movie.id} href={`/movie/${movie.id}`} className="group">
                         <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-secondary">
-                          {movie.poster_path && !failedImages.has(movie.id) ? (
+                          {movie.poster_path ? (
                             <img
                               src={`${TMDB_IMAGE_BASE}${movie.poster_path}`}
                               alt={movie.title}
                               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                              onError={() => handleImageError(movie.id)}
-                              loading="lazy"
+                                                            loading="lazy"
                             />
                           ) : (
                             <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-2">
