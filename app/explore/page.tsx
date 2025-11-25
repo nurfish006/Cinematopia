@@ -44,7 +44,7 @@ export default function ExplorePage() {
         setMovies(data.results || [])
         setTotalPages(data.total_pages || 1)
       } catch (error) {
-        console.error("[v0] Error fetching movies:", error)
+        console.error("[nurfish006] Error fetching movies:", error)
       } finally {
         setLoading(false)
       }

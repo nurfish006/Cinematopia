@@ -73,7 +73,7 @@ export default function TVShowDetailsPage() {
           setSelectedVideo(data.videos[0])
         }
       } catch (error) {
-        console.error("[v0] Error fetching TV show details:", error)
+        console.error("[nurfish006] Error fetching TV show details:", error)
       } finally {
         setLoading(false)
       }

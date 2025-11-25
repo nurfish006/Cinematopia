@@ -24,7 +24,7 @@ export async function GET(request: Request) {
       const response = await fetch(`${TMDB_BASE_URL}/${endpoint}?api_key=${TMDB_API_KEY}&page=${page}`)
 
       if (!response.ok) {
-        console.error("[v0] TMDB API error:", response.status, response.statusText)
+        console.error("[nurfish006] TMDB API error:", response.status, response.statusText)
         return Response.json({ error: "Failed to fetch from TMDB" }, { status: 500 })
       }
 
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
 
     return Response.json({ results: [] })
   } catch (error) {
-    console.error("[v0] Error in TV API route:", error)
+    console.error("[nurfish006] Error in TV API route:", error)
     return Response.json({ error: "Failed to fetch TV shows", details: String(error) }, { status: 500 })
   }
 }

@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       cast: credits.cast?.slice(0, 10) || [],
     })
   } catch (error) {
-    console.error("[v0] Error fetching movie details:", error)
+    console.error("[nurfish006] Error fetching movie details:", error)
     return NextResponse.json({ error: "Failed to fetch movie details" }, { status: 500 })
   }
 }

@@ -72,7 +72,7 @@ export default function MovieDetailsPage() {
           setSelectedVideo(data.videos[0])
         }
       } catch (error) {
-        console.error("[v0] Error fetching movie details:", error)
+        console.error("[nurfish006] Error fetching movie details:", error)
       } finally {
         setLoading(false)
       }

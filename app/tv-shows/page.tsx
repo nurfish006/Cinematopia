@@ -44,7 +44,7 @@ export default function TVShowsPage() {
         setShows(data.results || [])
         setTotalPages(data.total_pages || 1)
       } catch (error) {
-        console.error("[v0] Error fetching TV shows:", error)
+        console.error("[nurfish006] Error fetching TV shows:", error)
       } finally {
         setLoading(false)
       }

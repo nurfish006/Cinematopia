@@ -180,7 +180,7 @@ export async function POST(request: Request) {
       explanation,
     })
   } catch (error) {
-    console.error("[v0] Error in mood-match API:", error)
+    console.error("[nurfish006] Error in mood-match API:", error)
     return Response.json({ error: "Failed to get recommendations", details: String(error) }, { status: 500 })
   }
 }

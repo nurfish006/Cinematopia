@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       current_page: Number.parseInt(page),
     })
   } catch (error) {
-    console.error("[v0] Error searching movies:", error)
+    console.error("[nurfish006] Error searching movies:", error)
     return NextResponse.json({ error: "Failed to search movies" }, { status: 500 })
   }
 }

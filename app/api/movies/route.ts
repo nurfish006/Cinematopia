@@ -27,7 +27,7 @@ export async function GET(request: Request) {
       const response = await fetch(`${TMDB_BASE_URL}/${endpoint}?api_key=${TMDB_API_KEY}&page=${page}`)
 
       if (!response.ok) {
-        console.error("[v0] TMDB API error:", response.status, response.statusText)
+        console.error("[nurfish006] TMDB API error:", response.status, response.statusText)
         return Response.json({ error: "Failed to fetch from TMDB" }, { status: 500 })
       }
 
@@ -47,7 +47,7 @@ export async function GET(request: Request) {
     ])
 
     if (!nowPlayingRes.ok || !topRatedRes.ok) {
-      console.error("[v0] TMDB API error")
+      console.error("[nurfish006] TMDB API error")
       return Response.json({ error: "Failed to fetch from TMDB" }, { status: 500 })
     }
 
@@ -58,7 +58,7 @@ export async function GET(request: Request) {
       topRated: topRatedData.results || [],
     })
   } catch (error) {
-    console.error("[v0] Error in movies API route:", error)
+    console.error("[nurfish006] Error in movies API route:", error)
     return Response.json({ error: "Failed to fetch movies", details: String(error) }, { status: 500 })
   }
 }

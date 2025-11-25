@@ -29,7 +29,7 @@ export default function Home() {
           setTopRatedMovies(data.topRated)
         }
       } catch (error) {
-        console.error("[v0] Error fetching movies:", error)
+        console.error("[nurfish006] Error fetching movies:", error)
       } finally {
         setIsLoading(false)
       }
