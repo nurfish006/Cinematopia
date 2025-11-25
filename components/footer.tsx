@@ -12,7 +12,10 @@ export default function Footer() {
               <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center">
                 <Clapperboard className="w-5 h-5 text-accent-foreground" />
               </div>
-              <span className="text-lg font-semibold tracking-tight text-foreground">Cinematopia</span>
+              <span className="text-lg font-semibold tracking-tight">
+                <span className="text-foreground">Cinema</span>
+                <span className="text-accent">topia</span>
+              </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
               Your destination for discovering the best in cinema and television entertainment.
@@ -92,7 +95,8 @@ export default function Footer() {
 
         <div className="mt-16 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Cinematopia. All rights reserved.
+            © {new Date().getFullYear()} <span className="text-foreground">Cinema</span>
+            <span className="text-accent">topia</span>. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">Powered by TMDB</p>
         </div>

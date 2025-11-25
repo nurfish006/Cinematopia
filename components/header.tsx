@@ -138,7 +138,10 @@ export default function Header({ onSearch }: HeaderProps) {
           <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center transition-transform group-hover:scale-105">
             <Clapperboard className="w-5 h-5 text-accent-foreground" />
           </div>
-          <span className="text-lg font-semibold tracking-tight text-foreground hidden sm:block">Cinematopia</span>
+          <span className="text-lg font-semibold tracking-tight hidden sm:block">
+            <span className="text-foreground">Cinema</span>
+            <span className="text-accent">topia</span>
+          </span>
         </Link>
 
         {/* Desktop Navigation */}

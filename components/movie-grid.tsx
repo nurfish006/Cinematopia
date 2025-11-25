@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { ChevronLeft, ChevronRight, Star } from "lucide-react"
+import { ChevronLeft, ChevronRight, Star, ImageOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
+
+const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
 interface MovieGridProps {
   title: string
@@ -32,6 +34,7 @@ export default function MovieGrid({ title, filter, imageBaseUrl }: MovieGridProp
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set())
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -67,6 +70,10 @@ export default function MovieGrid({ title, filter, imageBaseUrl }: MovieGridProp
   }
 
   const pageNumbers = getPaginationRange()
+
+  const handleImageError = (movieId: number) => {
+    setFailedImages((prev) => new Set(prev).add(movieId))
+  }
 
   return (
     <section className="space-y-6">
@@ -125,15 +132,20 @@ export default function MovieGrid({ title, filter, imageBaseUrl }: MovieGridProp
           {movies.map((movie) => (
             <button key={movie.id} onClick={() => router.push(`/movie/${movie.id}`)} className="group text-left">
               <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-secondary">
-                <img
-                  src={
-                    movie.poster_path
-                      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                      : "/abstract-movie-poster.png"
-                  }
-                  alt={movie.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                {movie.poster_path && !failedImages.has(movie.id) ? (
+                  <img
+                    src={`${TMDB_IMAGE_BASE}${movie.poster_path}`}
+                    alt={movie.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    onError={() => handleImageError(movie.id)}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-2">
+                    <ImageOff className="w-8 h-8" />
+                    <span className="text-xs text-center px-2">{movie.title}</span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                   <div className="flex items-center gap-1.5">

@@ -5,7 +5,11 @@ import { useParams, useRouter } from "next/navigation"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
-import { Star, ArrowLeft, Play, Calendar, Tv } from "lucide-react"
+import { Star, ArrowLeft, Play, Calendar, Tv, ImageOff } from "lucide-react"
+
+const TMDB_ORIGINAL = "https://image.tmdb.org/t/p/original"
+const TMDB_W500 = "https://image.tmdb.org/t/p/w500"
+const TMDB_W300 = "https://image.tmdb.org/t/p/w300"
 
 interface TVShowDetails {
   id: number
@@ -46,8 +50,7 @@ export default function TVShowDetailsPage() {
   const [cast, setCast] = useState<Cast[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
-
-  const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/original"
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -79,6 +82,10 @@ export default function TVShowDetailsPage() {
     if (showId) fetchDetails()
   }, [showId])
 
+  const handleImageError = (id: string) => {
+    setFailedImages((prev) => new Set(prev).add(id))
+  }
+
   if (loading) {
     return (
       <>
@@ -108,6 +115,9 @@ export default function TVShowDetailsPage() {
     )
   }
 
+  const backdropUrl = show.backdrop_path ? `${TMDB_ORIGINAL}${show.backdrop_path}` : "/tv-show-backdrop.png"
+  const posterUrl = show.poster_path ? `${TMDB_W500}${show.poster_path}` : "/mystery-town-poster.png"
+
   return (
     <>
       <Header onSearch={() => {}} />
@@ -115,12 +125,7 @@ export default function TVShowDetailsPage() {
       <main className="min-h-screen bg-background">
         {/* Hero backdrop */}
         <div className="relative h-[55vh] min-h-[400px]">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${show.backdrop_path ? `${IMAGE_BASE_URL}${show.backdrop_path}` : "/tv-show-backdrop.png"})`,
-            }}
-          >
+          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${backdropUrl})` }}>
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/30" />
           </div>
 
@@ -142,9 +147,13 @@ export default function TVShowDetailsPage() {
             {/* Poster */}
             <div className="w-52 md:w-64 shrink-0 mx-auto md:mx-0">
               <img
-                src={show.poster_path ? `${IMAGE_BASE_URL}${show.poster_path}` : "/mystery-town-poster.png"}
+                src={posterUrl || "/placeholder.svg"}
                 alt={show.name}
                 className="w-full rounded-xl shadow-2xl"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement
+                  target.src = "/generic-tv-poster.png"
+                }}
               />
             </div>
 
@@ -246,15 +255,17 @@ export default function TVShowDetailsPage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {cast.map((actor) => (
                   <div key={actor.id} className="bg-card rounded-xl overflow-hidden border border-border/50">
-                    {actor.profile_path ? (
+                    {actor.profile_path && !failedImages.has(`cast-${actor.id}`) ? (
                       <img
-                        src={`https://image.tmdb.org/t/p/w300${actor.profile_path}`}
+                        src={`${TMDB_W300}${actor.profile_path}`}
                         alt={actor.name}
                         className="w-full aspect-[3/4] object-cover"
+                        onError={() => handleImageError(`cast-${actor.id}`)}
                       />
                     ) : (
-                      <div className="w-full aspect-[3/4] bg-secondary flex items-center justify-center text-muted-foreground text-sm">
-                        No Image
+                      <div className="w-full aspect-[3/4] bg-secondary flex flex-col items-center justify-center text-muted-foreground gap-2">
+                        <ImageOff className="w-6 h-6" />
+                        <span className="text-xs">No Image</span>
                       </div>
                     )}
                     <div className="p-3">

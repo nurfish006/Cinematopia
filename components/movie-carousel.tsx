@@ -1,10 +1,12 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ChevronLeft, ChevronRight, Star } from "lucide-react"
+import { ChevronLeft, ChevronRight, Star, ImageOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+
+const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
 interface MovieCarouselProps {
   title: string
@@ -15,6 +17,7 @@ interface MovieCarouselProps {
 export default function MovieCarousel({ title, movies, imageBaseUrl }: MovieCarouselProps) {
   const router = useRouter()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set())
 
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
@@ -24,6 +27,10 @@ export default function MovieCarousel({ title, movies, imageBaseUrl }: MovieCaro
         behavior: "smooth",
       })
     }
+  }
+
+  const handleImageError = (movieId: number) => {
+    setFailedImages((prev) => new Set(prev).add(movieId))
   }
 
   return (
@@ -44,15 +51,20 @@ export default function MovieCarousel({ title, movies, imageBaseUrl }: MovieCaro
               className="shrink-0 w-40 md:w-44 group text-left"
             >
               <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-secondary">
-                <img
-                  src={
-                    movie.poster_path
-                      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                      : "/abstract-movie-poster.png"
-                  }
-                  alt={movie.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                {movie.poster_path && !failedImages.has(movie.id) ? (
+                  <img
+                    src={`${TMDB_IMAGE_BASE}${movie.poster_path}`}
+                    alt={movie.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    onError={() => handleImageError(movie.id)}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-2">
+                    <ImageOff className="w-8 h-8" />
+                    <span className="text-xs text-center px-2">{movie.title}</span>
+                  </div>
+                )}
                 <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-1 rounded-md bg-background/80 backdrop-blur-sm">
                   <Star className="w-3 h-3 text-accent fill-accent" />
                   <span className="text-xs font-medium">{movie.vote_average?.toFixed(1)}</span>
@@ -65,7 +77,6 @@ export default function MovieCarousel({ title, movies, imageBaseUrl }: MovieCaro
           ))}
         </div>
 
-        {/* Navigation arrows */}
         <Button
           onClick={() => scroll("left")}
           size="icon"

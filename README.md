@@ -1,170 +1,242 @@
-# Movie Database Application
+# Cinematopia
 
-A modern, elegant movie database web application built with Next.js 16, featuring real-time movie data from The Movie Database (TMDB) API, beautiful dark/light mode themes, and a responsive design.
+A modern, elegant movie and TV show discovery platform built with Next.js 15, featuring a unique AI-powered Mood Matcher that recommends films based on your current mood.
+
+---
 
 ## Features
 
-- **Browse Movies**: Explore movies by category (Now Playing, Popular, Top Rated, Upcoming)
-- **Search Functionality**: Find movies quickly with built-in search
-- **Movie Details**: View comprehensive information about each movie
-- **TV Shows**: Browse and discover TV shows
-- **Responsive Design**: Optimized for all screen sizes
-- **Dark/Light Mode**: Toggle between elegant dark and light themes
-- **Featured Banner**: Carousel showcasing featured movies
-- **Real-time Data**: Live movie information from TMDB API
+- **Home Page** - Featured banner carousel with now-playing movies, top-rated sections, and movie grids
+- **Explore** - Browse movies by category (Popular, Top Rated, Upcoming, Now Playing)
+- **TV Shows** - Discover TV series with filters for Popular, Top Rated, On The Air, and Airing Today
+- **Movie/TV Details** - Full details with trailers, cast information, and video galleries
+- **Search** - Live search with dropdown suggestions and full results page
+- **Mood Match** - Describe your mood in natural language and get personalized movie recommendations
+- **Dark/Light Mode** - Elegant theme switching with carefully designed color palettes
+
+---
 
 ## Tech Stack
 
-- **Framework**: Next.js 16.0.3 (with Turbopack)
-- **UI Library**: React 19.2.0
-- **Language**: TypeScript 5
-- **Styling**: Tailwind CSS 4.1.9
-- **UI Components**: Radix UI
-- **Icons**: Lucide React
-- **Theme Management**: next-themes
-- **Package Manager**: npm
+| Technology | Purpose |
+|------------|---------|
+| **Next.js 15** | React framework with App Router |
+| **TypeScript** | Type-safe development |
+| **Tailwind CSS v4** | Utility-first styling |
+| **shadcn/ui** | UI component library |
+| **TMDB API** | Movie and TV show data |
+| **Lucide React** | Icon library |
+| **Geist Font** | Typography |
 
-## Prerequisites
-
-- Node.js 20 or higher
-- TMDB API Key (free - see setup instructions below)
+---
 
 ## Getting Started
 
-### 1. Get Your TMDB API Key
+### Prerequisites
 
-1. Create a free account at [The Movie Database](https://www.themoviedb.org/signup)
-2. Go to your [API Settings](https://www.themoviedb.org/settings/api)
-3. Request an API key (choose "Developer" option)
-4. Copy your API key
+- Node.js 18+ 
+- TMDB API Key (get one free at [themoviedb.org](https://www.themoviedb.org/settings/api))
 
-### 2. Set Up Environment Variables
+### Installation
 
-Create a `.env.local` file in the root directory and add your TMDB API key:
+1. Clone the repository:
+   \`\`\`bash
+   git clone https://github.com/nurfish006/Cinematopia.git
+   cd Cinematopia
+   \`\`\`
 
-```bash
-TMDB_API_KEY=your_api_key_here
-```
+2. Install dependencies:
+   \`\`\`bash
+   npm install
+   # or
+   pnpm install
+   \`\`\`
 
-Or if you're using Replit, add `TMDB_API_KEY` as a secret in the Secrets tab.
+3. Set up environment variables:
+   \`\`\`bash
+   # Create .env.local file
+   TMDB_API_KEY=your_tmdb_api_key_here
+   \`\`\`
 
-### 3. Install Dependencies
+4. Run the development server:
+   \`\`\`bash
+   npm run dev
+   \`\`\`
 
-```bash
-npm install
-```
+5. Open [http://localhost:3000](http://localhost:3000)
 
-### 4. Run the Development Server
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:5000](http://localhost:5000) in your browser to see the application.
-
-## Available Scripts
-
-- `npm run dev` - Start the development server on port 5000
-- `npm run build` - Build the application for production
-- `npm start` - Start the production server
-- `npm run lint` - Run ESLint to check code quality
+---
 
 ## Project Structure
 
-```
+\`\`\`
 ├── app/
-│   ├── api/              # API routes (server-side)
-│   │   ├── movies/       # Movies API endpoints
-│   │   ├── movie/[id]/   # Individual movie details
-│   │   ├── tv/           # TV shows endpoints
-│   │   └── search/       # Search functionality
-│   ├── movie/[id]/       # Movie detail pages
-│   ├── tv/[id]/          # TV show detail pages
-│   ├── explore/          # Browse/explore page
-│   ├── search/           # Search results page
-│   ├── tv-shows/         # TV shows page
-│   ├── layout.tsx        # Root layout
-│   └── page.tsx          # Home page
+│   ├── api/                    # API routes
+│   │   ├── mood-match/         # Mood matcher endpoint
+│   │   ├── movies/             # Movies endpoints
+│   │   ├── movie/[id]/         # Single movie details
+│   │   ├── search/             # Search endpoint
+│   │   ├── tv/                 # TV shows endpoints
+│   │   └── tv/[id]/            # Single TV show details
+│   ├── explore/                # Explore movies page
+│   ├── mood/                   # Mood matcher page
+│   ├── movie/[id]/             # Movie details page
+│   ├── search/                 # Search results page
+│   ├── tv/[id]/                # TV show details page
+│   ├── tv-shows/               # TV shows listing page
+│   ├── globals.css             # Global styles & design tokens
+│   ├── layout.tsx              # Root layout
+│   └── page.tsx                # Home page
 ├── components/
-│   ├── ui/               # Reusable UI components (Radix UI)
-│   ├── header.tsx        # Navigation header
-│   ├── footer.tsx        # Footer component
-│   ├── movie-grid.tsx    # Grid display for movies
-│   ├── movie-carousel.tsx # Carousel for featured content
-│   └── featured-banner.tsx # Hero banner component
-├── lib/
-│   └── utils.ts          # Utility functions
-└── public/               # Static assets
-```
+│   ├── ui/                     # shadcn/ui components
+│   ├── featured-banner.tsx     # Hero banner carousel
+│   ├── footer.tsx              # Site footer
+│   ├── header.tsx              # Navigation header
+│   ├── movie-carousel.tsx      # Horizontal movie carousel
+│   └── movie-grid.tsx          # Movie grid display
+└── public/                     # Static assets
+\`\`\`
 
-## Color Palette
+---
 
-### Dark Mode (Noir Cinema)
-- Background: `#0D0D0F` (near-black charcoal)
-- Surfaces: `#1A1A23` (deep bluish shadows)
-- Text: `#E4E4EB` (soft silver)
-- Accent: `#6D6DF7` (lavender neon)
-- Highlights: `#F5C542` (gold for ratings/stars)
+## Customizing the UI
 
-### Light Mode (Modern Silver)
-- Background: `#F7F8FA` (crisp background)
-- Surfaces: `#E2E5EA` (card surfaces)
-- Text: `#1C1F26` (primary text)
-- Accent: `#4754F7` (strong indigo)
-- Highlights: `#F5C542` (gold)
+### Color Palette
 
-## API Integration
+All colors are defined in `app/globals.css` using CSS custom properties with OKLCH color format for better color accuracy.
 
-This application uses [The Movie Database (TMDB) API](https://www.themoviedb.org/documentation/api) to fetch movie and TV show data. All API calls are made server-side through Next.js API routes for security and performance.
+#### Key Color Tokens
 
-### Key Endpoints
+| Token | Purpose | Location |
+|-------|---------|----------|
+| `--background` | Main background color | Line 10 (light), Line 44 (dark) |
+| `--foreground` | Primary text color | Line 11 (light), Line 45 (dark) |
+| `--accent` | Brand accent color (copper/orange) | Line 21 (light), Line 55 (dark) |
+| `--muted` | Muted backgrounds | Line 17 (light), Line 51 (dark) |
+| `--muted-foreground` | Secondary text | Line 18 (light), Line 52 (dark) |
+| `--card` | Card backgrounds | Line 12 (light), Line 46 (dark) |
+| `--border` | Border colors | Line 24 (light), Line 58 (dark) |
 
-- `/api/movies` - Fetch movies by category
-- `/api/movie/[id]` - Get individual movie details
-- `/api/tv` - Fetch TV shows
-- `/api/tv/[id]` - Get individual TV show details
-- `/api/search` - Search movies and TV shows
+#### How to Change Colors
 
-## Deployment
+1. **Change the accent color** (currently copper/orange):
+   \`\`\`css
+   /* In app/globals.css */
+   
+   /* Light mode - Line 21 */
+   --accent: oklch(0.62 0.14 45);
+   
+   /* Dark mode - Line 55 */  
+   --accent: oklch(0.72 0.15 50);
+   \`\`\`
+   
+   OKLCH format: `oklch(lightness chroma hue)`
+   - Lightness: 0-1 (0 = black, 1 = white)
+   - Chroma: 0-0.4 (color saturation)
+   - Hue: 0-360 (color wheel degree)
+   
+   Common hue values:
+   - Red: 25-30
+   - Orange: 45-60
+   - Yellow: 90-100
+   - Green: 140-160
+   - Blue: 240-260
+   - Purple: 300-320
 
-### Deploy to Replit
+2. **Change the background**:
+   \`\`\`css
+   /* Light mode - warm ivory */
+   --background: oklch(0.985 0.005 80);
+   
+   /* Dark mode - deep charcoal */
+   --background: oklch(0.12 0.015 280);
+   \`\`\`
 
-This project is pre-configured for Replit deployment:
+3. **Adjust text colors**:
+   \`\`\`css
+   /* Primary text */
+   --foreground: oklch(0.18 0.015 50);  /* Light mode */
+   --foreground: oklch(0.92 0.005 80);  /* Dark mode */
+   \`\`\`
 
-1. Add your `TMDB_API_KEY` in the Secrets tab
-2. Click the "Publish" button in Replit
-3. Your app will be deployed with autoscaling
+### Typography
 
-### Deploy to Vercel
+Fonts are configured in two places:
 
-```bash
-npm run build
-```
+1. **Font imports** - `app/layout.tsx`:
+   \`\`\`tsx
+   import { Geist, Geist_Mono } from 'next/font/google'
+   \`\`\`
 
-Then deploy using the Vercel CLI or through the Vercel dashboard.
+2. **Font variables** - `app/globals.css`:
+   \`\`\`css
+   @theme inline {
+     --font-sans: "Geist", "Geist Fallback", system-ui, sans-serif;
+     --font-mono: "Geist Mono", "Geist Mono Fallback", monospace;
+   }
+   \`\`\`
+
+### Component Styling
+
+| Component | File | Key Classes |
+|-----------|------|-------------|
+| Header | `components/header.tsx` | `bg-background/95`, `border-border/50` |
+| Footer | `components/footer.tsx` | `bg-secondary/30`, `border-border/50` |
+| Movie Cards | `components/movie-grid.tsx` | `bg-secondary`, `rounded-xl` |
+| Buttons | Uses shadcn/ui | `bg-accent`, `text-accent-foreground` |
+| Banner | `components/featured-banner.tsx` | Gradient overlays |
+
+### Branding
+
+The "Cinematopia" brand uses a split color design:
+- "Cinema" - uses `text-foreground` (white in dark mode, dark in light mode)
+- "topia" - uses `text-accent` (copper/orange accent color)
+
+To change this, search for `Cinematopia` in:
+- `components/header.tsx`
+- `components/footer.tsx`
+
+---
+
+## API Routes
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/movies` | GET | Fetch movies by category |
+| `/api/movie/[id]` | GET | Get movie details |
+| `/api/search` | GET | Search movies |
+| `/api/tv` | GET | Fetch TV shows by category |
+| `/api/tv/[id]` | GET | Get TV show details |
+| `/api/mood-match` | POST | Get mood-based recommendations |
+
+---
 
 ## Environment Variables
 
-- `TMDB_API_KEY` - Your TMDB API key (required)
-- `REPLIT_DEV_DOMAIN` - Automatically set by Replit for proxy configuration
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `TMDB_API_KEY` | Yes | Your TMDB API key |
 
-## Features Coming Soon
+---
 
-- User authentication and watchlists
-- Movie ratings and reviews
-- Advanced filtering and sorting
-- Personalized recommendations
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Commit changes: `git commit -m 'Add my feature'`
+4. Push to branch: `git push origin feature/my-feature`
+5. Open a Pull Request
+
+---
 
 ## License
 
-This project is open source and available under the MIT License.
+MIT License - feel free to use this project for personal or commercial purposes.
+
+---
 
 ## Acknowledgments
 
-- Movie data provided by [The Movie Database (TMDB)](https://www.themoviedb.org/)
-- UI components by [Radix UI](https://www.radix-ui.com/)
-- Icons by [Lucide](https://lucide.dev/)
-
-## Support
-
-For issues and questions, please open an issue on the GitHub repository.
+- [TMDB](https://www.themoviedb.org/) for the movie and TV data API
+- [shadcn/ui](https://ui.shadcn.com/) for the beautiful UI components
+- [Vercel](https://vercel.com/) for hosting and deployment

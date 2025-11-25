@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Loader2, Star, RotateCcw, Sparkles } from "lucide-react"
+import { ArrowRight, Loader2, Star, RotateCcw, Sparkles, ImageOff } from "lucide-react"
 import Link from "next/link"
 
 interface Movie {
@@ -34,15 +34,16 @@ const moodSuggestions: MoodSuggestion[] = [
   { label: "Late night", prompt: "It's late and I want something captivating but not too intense" },
 ]
 
+const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
+
 export default function MoodMatcherPage() {
   const [mood, setMood] = useState("")
   const [recommendations, setRecommendations] = useState<Movie[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
   const [aiExplanation, setAiExplanation] = useState("")
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set())
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-
-  const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -89,7 +90,12 @@ export default function MoodMatcherPage() {
     setRecommendations([])
     setHasSearched(false)
     setAiExplanation("")
+    setFailedImages(new Set())
     textareaRef.current?.focus()
+  }
+
+  const handleImageError = (movieId: number) => {
+    setFailedImages((prev) => new Set(prev).add(movieId))
   }
 
   return (
@@ -105,8 +111,10 @@ export default function MoodMatcherPage() {
               <span className="text-xs font-medium tracking-widest uppercase text-muted-foreground">Mood Match</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl font-semibold text-foreground tracking-tight leading-snug text-balance">
-              What are you in the mood for?
+            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight leading-snug text-balance">
+              <span className="text-foreground">What are you </span>
+              <span className="text-accent">in the mood</span>
+              <span className="text-foreground"> for?</span>
             </h1>
 
             <p className="text-muted-foreground mt-4 text-base max-w-sm mx-auto">
@@ -205,13 +213,20 @@ export default function MoodMatcherPage() {
                     {recommendations.map((movie) => (
                       <Link key={movie.id} href={`/movie/${movie.id}`} className="group">
                         <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-secondary">
-                          <img
-                            src={
-                              movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : "/abstract-movie-poster.png"
-                            }
-                            alt={movie.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
+                          {movie.poster_path && !failedImages.has(movie.id) ? (
+                            <img
+                              src={`${TMDB_IMAGE_BASE}${movie.poster_path}`}
+                              alt={movie.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              onError={() => handleImageError(movie.id)}
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-2">
+                              <ImageOff className="w-8 h-8" />
+                              <span className="text-xs text-center px-2">{movie.title}</span>
+                            </div>
+                          )}
                           <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-1 rounded-md bg-background/80 backdrop-blur-sm text-xs font-medium">
                             <Star className="w-3 h-3 text-accent fill-accent" />
                             {movie.vote_average?.toFixed(1)}

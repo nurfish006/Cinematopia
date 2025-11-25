@@ -2,11 +2,13 @@
 
 import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
-import { ChevronLeft, ChevronRight, Star } from "lucide-react"
+import { ChevronLeft, ChevronRight, Star, ImageOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import Link from "next/link"
+
+const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
 interface Movie {
   id: number
@@ -32,6 +34,7 @@ function SearchContent() {
   const [totalPages, setTotalPages] = useState(1)
   const [totalResults, setTotalResults] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set())
 
   useEffect(() => {
     if (!query) {
@@ -73,6 +76,10 @@ function SearchContent() {
     return pages
   }
 
+  const handleImageError = (movieId: number) => {
+    setFailedImages((prev) => new Set(prev).add(movieId))
+  }
+
   return (
     <>
       <Header onSearch={() => {}} />
@@ -111,15 +118,18 @@ function SearchContent() {
                 {movies.map((movie) => (
                   <Link key={movie.id} href={`/movie/${movie.id}`} className="group text-left">
                     <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-secondary">
-                      {movie.poster_path ? (
+                      {movie.poster_path && !failedImages.has(movie.id) ? (
                         <img
-                          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                          src={`${TMDB_IMAGE_BASE}${movie.poster_path}`}
                           alt={movie.title}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          onError={() => handleImageError(movie.id)}
+                          loading="lazy"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
-                          No Image
+                        <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-2">
+                          <ImageOff className="w-8 h-8" />
+                          <span className="text-xs text-center px-2">{movie.title}</span>
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

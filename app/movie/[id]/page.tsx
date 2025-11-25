@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
-import { Star, ArrowLeft, Play, Clock, Calendar } from "lucide-react"
+import { Star, ArrowLeft, Play, Clock, Calendar, ImageOff } from "lucide-react"
 
 interface MovieDetails {
   id: number
@@ -45,8 +45,11 @@ export default function MovieDetailsPage() {
   const [cast, setCast] = useState<Cast[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set())
 
-  const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/original"
+  const TMDB_ORIGINAL = "https://image.tmdb.org/t/p/original"
+  const TMDB_W500 = "https://image.tmdb.org/t/p/w500"
+  const TMDB_W300 = "https://image.tmdb.org/t/p/w300"
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -78,6 +81,10 @@ export default function MovieDetailsPage() {
     if (movieId) fetchDetails()
   }, [movieId])
 
+  const handleImageError = (id: string) => {
+    setFailedImages((prev) => new Set(prev).add(id))
+  }
+
   if (loading) {
     return (
       <>
@@ -107,6 +114,9 @@ export default function MovieDetailsPage() {
     )
   }
 
+  const backdropUrl = movie.backdrop_path ? `${TMDB_ORIGINAL}${movie.backdrop_path}` : "/movie-backdrop.png"
+  const posterUrl = movie.poster_path ? `${TMDB_W500}${movie.poster_path}` : "/abstract-movie-poster.png"
+
   return (
     <>
       <Header onSearch={() => {}} />
@@ -114,12 +124,7 @@ export default function MovieDetailsPage() {
       <main className="min-h-screen bg-background">
         {/* Hero backdrop */}
         <div className="relative h-[55vh] min-h-[400px]">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${movie.backdrop_path ? `${IMAGE_BASE_URL}${movie.backdrop_path}` : "/movie-backdrop.png"})`,
-            }}
-          >
+          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${backdropUrl})` }}>
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/30" />
           </div>
 
@@ -141,9 +146,13 @@ export default function MovieDetailsPage() {
             {/* Poster */}
             <div className="w-52 md:w-64 shrink-0 mx-auto md:mx-0">
               <img
-                src={movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : "/abstract-movie-poster.png"}
+                src={posterUrl || "/placeholder.svg"}
                 alt={movie.title}
                 className="w-full rounded-xl shadow-2xl"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement
+                  target.src = "/abstract-movie-poster.png"
+                }}
               />
             </div>
 
@@ -245,15 +254,17 @@ export default function MovieDetailsPage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {cast.map((actor) => (
                   <div key={actor.id} className="bg-card rounded-xl overflow-hidden border border-border/50">
-                    {actor.profile_path ? (
+                    {actor.profile_path && !failedImages.has(`cast-${actor.id}`) ? (
                       <img
-                        src={`https://image.tmdb.org/t/p/w300${actor.profile_path}`}
+                        src={`${TMDB_W300}${actor.profile_path}`}
                         alt={actor.name}
                         className="w-full aspect-[3/4] object-cover"
+                        onError={() => handleImageError(`cast-${actor.id}`)}
                       />
                     ) : (
-                      <div className="w-full aspect-[3/4] bg-secondary flex items-center justify-center text-muted-foreground text-sm">
-                        No Image
+                      <div className="w-full aspect-[3/4] bg-secondary flex flex-col items-center justify-center text-muted-foreground gap-2">
+                        <ImageOff className="w-6 h-6" />
+                        <span className="text-xs">No Image</span>
                       </div>
                     )}
                     <div className="p-3">
