@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { Search, Moon, Sun, X, Menu, Film } from "lucide-react"
+import { Search, Moon, Sun, X, Menu, Film, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -165,6 +165,15 @@ export default function Header({ onSearch }: HeaderProps) {
           >
             TV Shows
           </Link>
+          <Link
+            href="/mood"
+            className={`font-medium transition-colors flex items-center gap-1.5 ${
+              isActive("/mood") ? "text-accent" : "text-foreground/70 hover:text-accent"
+            }`}
+          >
+            <Sparkles className="w-4 h-4" />
+            Mood Match
+          </Link>
         </nav>
 
         <button
@@ -262,6 +271,16 @@ export default function Header({ onSearch }: HeaderProps) {
             }`}
           >
             TV Shows
+          </Link>
+          <Link
+            href="/mood"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`px-4 py-2 rounded-lg font-medium flex items-center gap-2 ${
+              isActive("/mood") ? "bg-accent text-accent-foreground" : ""
+            }`}
+          >
+            <Sparkles className="w-4 h-4" />
+            Mood Match
           </Link>
         </nav>
       )}
