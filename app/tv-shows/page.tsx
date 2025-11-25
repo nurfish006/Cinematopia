@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 
+export const dynamic = 'force-dynamic'
+
 type FilterType = "popular" | "top_rated" | "on_the_air" | "airing_today"
 
 interface TVShow {

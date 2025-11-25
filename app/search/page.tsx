@@ -1,11 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ChevronLeft, ChevronRight, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
+
+export const dynamic = 'force-dynamic'
 
 interface Movie {
   id: number
@@ -22,7 +24,7 @@ interface SearchResponse {
   total_results: number
 }
 
-export default function SearchPage() {
+function SearchContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const query = searchParams.get("q") || ""
@@ -215,5 +217,21 @@ export default function SearchPage() {
       </main>
       <Footer />
     </>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <>
+        <Header onSearch={() => {}} />
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <p className="text-foreground/70">Loading search...</p>
+        </div>
+        <Footer />
+      </>
+    }>
+      <SearchContent />
+    </Suspense>
   )
 }

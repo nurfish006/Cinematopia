@@ -1,8 +1,8 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, useRef } from "react"
-import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { Suspense, useState, useEffect, useRef } from "react"
+import { useRouter, usePathname } from "next/navigation"
 import { Search, Star, Moon, Sun, X, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -17,10 +17,9 @@ interface HeaderProps {
   onSearch: (query: string) => void
 }
 
-export default function Header({ onSearch }: HeaderProps) {
+function HeaderContent({ onSearch }: HeaderProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const [searchValue, setSearchValue] = useState<string>(() => {
     if (typeof window !== "undefined") {
       const query = new URLSearchParams(window.location.search).get("q")
@@ -286,5 +285,24 @@ export default function Header({ onSearch }: HeaderProps) {
         </nav>
       )}
     </header>
+  )
+}
+
+export default function Header({ onSearch }: HeaderProps) {
+  return (
+    <Suspense fallback={
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-accent/20">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
+              <Star className="w-6 h-6 text-background" />
+            </div>
+            <h1 className="text-xl md:text-2xl font-bold text-accent">Cinematopia</h1>
+          </div>
+        </div>
+      </header>
+    }>
+      <HeaderContent onSearch={onSearch} />
+    </Suspense>
   )
 }

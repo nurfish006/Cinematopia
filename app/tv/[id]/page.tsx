@@ -7,6 +7,8 @@ import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Star, ArrowLeft, Play } from "lucide-react"
 
+export const dynamic = 'force-dynamic'
+
 interface TVShowDetails {
   id: number
   name: string
