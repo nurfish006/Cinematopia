@@ -1,13 +1,11 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef, useEffect } from "react"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Sparkles, Send, Film, RefreshCw, Star, Calendar } from "lucide-react"
+import { ArrowRight, Film, Loader2, Star, RotateCcw } from "lucide-react"
 import Link from "next/link"
 
 interface Movie {
@@ -23,20 +21,18 @@ interface Movie {
 interface MoodSuggestion {
   label: string
   prompt: string
+  icon: string
 }
 
 const moodSuggestions: MoodSuggestion[] = [
-  {
-    label: "Cozy night in",
-    prompt: "I want something warm and comforting for a cozy night in with blankets and hot cocoa",
-  },
-  { label: "Need a good cry", prompt: "I'm in the mood for an emotional movie that will make me cry" },
-  { label: "Mind-bending", prompt: "I want something that will blow my mind with twists and make me think" },
-  { label: "Date night", prompt: "Looking for a romantic but not cheesy movie for date night" },
-  { label: "Adrenaline rush", prompt: "I need non-stop action and excitement to get my heart pumping" },
-  { label: "Feeling nostalgic", prompt: "I'm feeling nostalgic and want something that reminds me of the 90s" },
-  { label: "Laugh out loud", prompt: "I desperately need to laugh until my stomach hurts" },
-  { label: "Can't sleep", prompt: "It's 2am and I can't sleep, I want something captivating but not too intense" },
+  { label: "Cozy Evening", prompt: "I want something warm and comforting for a cozy night in", icon: "🌙" },
+  { label: "Emotional", prompt: "I'm in the mood for an emotional movie that will make me cry", icon: "💫" },
+  { label: "Mind-Bending", prompt: "I want something that will blow my mind with twists", icon: "🌀" },
+  { label: "Date Night", prompt: "Looking for a romantic but not cheesy movie for date night", icon: "✨" },
+  { label: "Thrilling", prompt: "I need non-stop action and excitement", icon: "⚡" },
+  { label: "Nostalgic", prompt: "I'm feeling nostalgic and want something classic", icon: "🎞" },
+  { label: "Comedy", prompt: "I desperately need to laugh until my stomach hurts", icon: "😄" },
+  { label: "Late Night", prompt: "It's late and I want something captivating but not too intense", icon: "🌃" },
 ]
 
 export default function MoodMatcherPage() {
@@ -45,6 +41,7 @@ export default function MoodMatcherPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
   const [aiExplanation, setAiExplanation] = useState("")
+  const [focusedInput, setFocusedInput] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
@@ -52,7 +49,7 @@ export default function MoodMatcherPage() {
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto"
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`
     }
   }, [mood])
 
@@ -101,156 +98,202 @@ export default function MoodMatcherPage() {
     <div className="min-h-screen bg-background flex flex-col">
       <Header onSearch={() => {}} />
 
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Hero Section */}
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent/20 mb-6">
-              <Sparkles className="w-8 h-8 text-accent" />
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="relative overflow-hidden">
+          {/* Subtle gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-accent/[0.03] via-transparent to-transparent pointer-events-none" />
+
+          <div className="container mx-auto px-4 pt-16 pb-12 md:pt-24 md:pb-16">
+            <div className="max-w-3xl mx-auto text-center">
+              {/* Elegant label */}
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent mb-8">
+                <span className="text-xs font-medium tracking-widest uppercase">Mood Matcher</span>
+              </div>
+
+              {/* Main headline - elegant serif-inspired weight */}
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-light text-foreground mb-6 tracking-tight text-balance leading-[1.1]">
+                Find Films That
+                <span className="block font-normal text-accent">Match Your Mood</span>
+              </h1>
+
+              <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed text-pretty">
+                Describe how you're feeling, and we'll curate the perfect selection for your moment.
+              </p>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 text-balance">AI Mood Matcher</h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-              Tell us how you're feeling, what you're in the mood for, or describe your perfect movie night. Our AI will
-              find the perfect films to match your vibe.
-            </p>
           </div>
+        </section>
 
-          {/* Input Section */}
-          <form onSubmit={handleSubmit} className="mb-8">
-            <div className="relative bg-card rounded-2xl border border-border p-4 shadow-lg">
-              <Textarea
-                ref={textareaRef}
-                value={mood}
-                onChange={(e) => setMood(e.target.value)}
-                placeholder="Describe your mood, occasion, or what kind of movie experience you want..."
-                className="min-h-[100px] max-h-[200px] resize-none border-0 bg-transparent text-foreground text-lg placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 p-0"
-                disabled={isLoading}
-              />
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
-                <p className="text-sm text-muted-foreground">
-                  Be as descriptive as you like - the more context, the better the matches!
-                </p>
-                <Button
-                  type="submit"
-                  disabled={!mood.trim() || isLoading}
-                  className="rounded-xl bg-accent text-accent-foreground hover:bg-accent/90 gap-2"
-                >
-                  {isLoading ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      Matching...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4" />
-                      Find Movies
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          </form>
+        {/* Input Section */}
+        <section className="container mx-auto px-4 pb-12">
+          <div className="max-w-2xl mx-auto">
+            <form onSubmit={handleSubmit}>
+              <div
+                className={`relative bg-card rounded-2xl border transition-all duration-300 ${
+                  focusedInput ? "border-accent/40 shadow-lg shadow-accent/5" : "border-border shadow-sm"
+                }`}
+              >
+                <textarea
+                  ref={textareaRef}
+                  value={mood}
+                  onChange={(e) => setMood(e.target.value)}
+                  onFocus={() => setFocusedInput(true)}
+                  onBlur={() => setFocusedInput(false)}
+                  placeholder="I'm in the mood for..."
+                  className="w-full min-h-[120px] max-h-[160px] resize-none bg-transparent text-foreground text-lg placeholder:text-muted-foreground/60 focus:outline-none p-6 pb-16"
+                  disabled={isLoading}
+                />
 
-          {/* Mood Suggestions */}
-          {!hasSearched && (
-            <div className="mb-12">
-              <p className="text-sm text-muted-foreground mb-4 text-center">Or try one of these:</p>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {moodSuggestions.map((suggestion) => (
-                  <button
-                    key={suggestion.label}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    className="px-4 py-2 rounded-full bg-secondary text-secondary-foreground hover:bg-accent hover:text-accent-foreground transition-colors text-sm font-medium"
+                <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between p-4 border-t border-border/50">
+                  <span className="text-xs text-muted-foreground/60 hidden sm:block">
+                    The more you share, the better the match
+                  </span>
+                  <Button
+                    type="submit"
+                    disabled={!mood.trim() || isLoading}
+                    className="ml-auto rounded-xl bg-foreground text-background hover:bg-foreground/90 disabled:opacity-40 gap-2 px-6 h-10 font-medium transition-all"
                   >
-                    {suggestion.label}
-                  </button>
-                ))}
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Finding...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Find Films</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
-            </div>
-          )}
+            </form>
 
-          {/* Loading State */}
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center py-16 gap-4">
-              <div className="relative">
-                <div className="w-16 h-16 rounded-full border-4 border-accent/30 border-t-accent animate-spin" />
-                <Film className="w-6 h-6 text-accent absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            {/* Mood Suggestions */}
+            {!hasSearched && (
+              <div className="mt-8">
+                <p className="text-sm text-muted-foreground mb-4 text-center">Quick suggestions</p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {moodSuggestions.map((suggestion) => (
+                    <button
+                      key={suggestion.label}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      className="group flex items-center gap-2 px-4 py-2.5 rounded-full bg-secondary/50 hover:bg-secondary text-secondary-foreground transition-all duration-200 text-sm border border-transparent hover:border-border"
+                    >
+                      <span className="opacity-70 group-hover:opacity-100 transition-opacity">{suggestion.icon}</span>
+                      <span>{suggestion.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <p className="text-muted-foreground animate-pulse">Analyzing your mood and finding perfect matches...</p>
-            </div>
-          )}
+            )}
+          </div>
+        </section>
 
-          {/* Results Section */}
-          {!isLoading && hasSearched && (
-            <div className="space-y-8">
+        {/* Loading State */}
+        {isLoading && (
+          <section className="container mx-auto px-4 py-16">
+            <div className="flex flex-col items-center justify-center gap-6">
+              <div className="relative w-16 h-16">
+                <div className="absolute inset-0 rounded-full border-2 border-accent/20" />
+                <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-accent animate-spin" />
+                <Film className="absolute inset-0 m-auto w-6 h-6 text-accent/60" />
+              </div>
+              <p className="text-muted-foreground text-center">Curating your personalized selection...</p>
+            </div>
+          </section>
+        )}
+
+        {/* Results Section */}
+        {!isLoading && hasSearched && (
+          <section className="container mx-auto px-4 pb-20">
+            <div className="max-w-5xl mx-auto">
+              {/* AI Explanation */}
               {aiExplanation && (
-                <div className="bg-accent/10 border border-accent/20 rounded-2xl p-6">
-                  <div className="flex items-start gap-3">
-                    <Sparkles className="w-5 h-5 text-accent mt-0.5 shrink-0" />
-                    <p className="text-foreground/90 leading-relaxed">{aiExplanation}</p>
-                  </div>
+                <div className="mb-12 p-6 md:p-8 rounded-2xl bg-gradient-to-br from-accent/5 to-accent/[0.02] border border-accent/10">
+                  <p className="text-foreground/80 leading-relaxed text-center text-lg italic">"{aiExplanation}"</p>
                 </div>
               )}
 
               {recommendations.length > 0 ? (
                 <>
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold text-foreground">Your Personalized Picks</h2>
-                    <Button variant="outline" onClick={handleReset} className="rounded-xl gap-2 bg-transparent">
-                      <RefreshCw className="w-4 h-4" />
-                      Try Again
+                  {/* Results Header */}
+                  <div className="flex items-center justify-between mb-8">
+                    <div>
+                      <h2 className="text-2xl md:text-3xl font-light text-foreground">Your Curated Selection</h2>
+                      <p className="text-muted-foreground mt-1">{recommendations.length} films matched to your mood</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      onClick={handleReset}
+                      className="rounded-xl gap-2 text-muted-foreground hover:text-foreground"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      <span className="hidden sm:inline">Start Over</span>
                     </Button>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Movie Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {recommendations.map((movie, index) => (
                       <Link
                         key={movie.id}
                         href={`/movie/${movie.id}`}
-                        className="group flex gap-4 bg-card rounded-2xl p-4 border border-border hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5 transition-all"
+                        className="group relative bg-card rounded-2xl overflow-hidden border border-border hover:border-accent/30 transition-all duration-300 hover:shadow-xl hover:shadow-accent/5"
                       >
-                        <div className="relative shrink-0">
-                          <span className="absolute -top-2 -left-2 w-7 h-7 bg-accent text-accent-foreground rounded-full flex items-center justify-center text-sm font-bold z-10">
-                            {index + 1}
-                          </span>
+                        {/* Poster */}
+                        <div className="relative aspect-[2/3] overflow-hidden">
                           <img
                             src={
                               movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : "/abstract-movie-poster.png"
                             }
                             alt={movie.title}
-                            className="w-24 h-36 object-cover rounded-xl ring-1 ring-border group-hover:ring-accent/50 transition-all"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />
+                          {/* Gradient overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                          {/* Rank badge */}
+                          <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center text-sm font-semibold text-foreground border border-border/50">
+                            {index + 1}
+                          </div>
+
+                          {/* Rating badge */}
+                          <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full bg-background/90 backdrop-blur-sm text-xs font-medium text-foreground border border-border/50">
+                            <Star className="w-3 h-3 text-accent fill-accent" />
+                            {movie.vote_average?.toFixed(1)}
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0 space-y-2">
-                          <h3 className="font-semibold text-foreground text-lg line-clamp-1 group-hover:text-accent transition-colors">
+
+                        {/* Content */}
+                        <div className="p-4">
+                          <h3 className="font-medium text-foreground text-lg line-clamp-1 group-hover:text-accent transition-colors">
                             {movie.title}
                           </h3>
-                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Star className="w-4 h-4 text-accent fill-accent" />
-                              {movie.vote_average?.toFixed(1)}
-                            </span>
-                            {movie.release_date && (
-                              <span className="flex items-center gap-1">
-                                <Calendar className="w-4 h-4" />
-                                {new Date(movie.release_date).getFullYear()}
-                              </span>
-                            )}
-                          </div>
-                          {movie.reason && (
-                            <p className="text-sm text-accent font-medium line-clamp-2">{movie.reason}</p>
+
+                          {movie.release_date && (
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {new Date(movie.release_date).getFullYear()}
+                            </p>
                           )}
-                          <p className="text-sm text-muted-foreground line-clamp-2">{movie.overview}</p>
+
+                          {movie.reason && (
+                            <p className="text-sm text-accent/80 mt-3 line-clamp-2 leading-relaxed">{movie.reason}</p>
+                          )}
                         </div>
                       </Link>
                     ))}
                   </div>
                 </>
               ) : (
-                <div className="text-center py-12">
-                  <Film className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground mb-4">
-                    No movies found for that mood. Try describing it differently!
+                /* Empty State */
+                <div className="text-center py-20">
+                  <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-6">
+                    <Film className="w-7 h-7 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-xl font-light text-foreground mb-2">No matches found</h3>
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    Try describing your mood differently, or explore one of our suggestions.
                   </p>
                   <Button variant="outline" onClick={handleReset} className="rounded-xl bg-transparent">
                     Try Again
@@ -258,8 +301,8 @@ export default function MoodMatcherPage() {
                 </div>
               )}
             </div>
-          )}
-        </div>
+          </section>
+        )}
       </main>
 
       <Footer />
